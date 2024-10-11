@@ -7,11 +7,18 @@ import { EnvConfig, validateEnv } from "./configs/env.config";
 import { z } from "zod";
 import { randomUUID } from "crypto";
 import { poweredBy } from "hono/powered-by";
+import { cors } from "hono/cors";
 
 validateEnv(process.env);
 
 const app = new Hono();
 app.use(poweredBy());
+app.use(
+  cors({
+    origin: "*",
+    allowMethods: ["POST"],
+  })
+);
 
 app.post(
   "/payment",
