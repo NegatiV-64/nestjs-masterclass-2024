@@ -44,7 +44,6 @@ export class AuthService {
     });
 
     return {
-      user,
       authToken,
     };
   }
