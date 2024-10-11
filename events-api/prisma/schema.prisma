@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./database.db"
+}
+
+model Event {
+  eventId          String   @id @default(uuid()) @map("event_id")
+  eventName        String   @map("event_name")
+  eventDescription String   @map("event_description")
+  eventLocation    String   @map("event_location")
+  eventDate        DateTime @map("event_date")
+  eventCreatedAt   DateTime @default(now()) @map("event_created_at")
+  eventUpdatedAt   DateTime @default(now()) @updatedAt @map("event_updated_at")
+}
