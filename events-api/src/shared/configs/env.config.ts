@@ -3,6 +3,8 @@ import { z } from 'zod';
 const envConfigSchema = z.object({
   APP_ENV: z.enum(['development', 'production', 'test']),
   APP_PORT: z.coerce.number().int().positive(),
+  AUTH_TOKEN_SECRET: z.string(),
+  AUTH_TOKEN_EXPIRES_IN: z.string(),
 });
 
 export type EnvConfig = z.infer<typeof envConfigSchema>;

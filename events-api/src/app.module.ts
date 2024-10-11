@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { validateEnv } from './shared/configs/env.config';
 import { DatabaseModule } from './modules/database/database.module';
 import { EventsModule } from './modules/events/events.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { EventsModule } from './modules/events/events.module';
       validate: validateEnv,
     }),
     DatabaseModule,
+    AuthModule,
     EventsModule,
   ],
 })

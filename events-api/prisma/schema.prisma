@@ -16,3 +16,14 @@ model Event {
   eventCreatedAt   DateTime @default(now()) @map("event_created_at")
   eventUpdatedAt   DateTime @default(now()) @updatedAt @map("event_updated_at")
 }
+
+model User {
+  userId        String   @id @default(uuid()) @map("user_id")
+  userEmail     String   @unique @map("user_email")
+  userFirstName String?  @map("user_first_name")
+  userLastName  String?  @map("user_last_name")
+  userPassword  String   @map("user_password")
+  userRole      String   @default("user") @map("user_role")
+  userCreatedAt DateTime @default(now()) @map("user_created_at")
+  userUpdatedAt DateTime @default(now()) @updatedAt @map("user_updated_at")
+}
