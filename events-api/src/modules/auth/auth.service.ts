@@ -77,7 +77,7 @@ export class AuthService {
   }
 
   async generateAuthToken(payload: AuthTokenPayload) {
-    const secret = this.configService.get('AUTH_TOKEN_EXPIRES_IN', {
+    const secret = this.configService.get('AUTH_TOKEN_SECRET', {
       infer: true,
     });
     const expiresIn = this.configService.get('AUTH_TOKEN_EXPIRES_IN', {
