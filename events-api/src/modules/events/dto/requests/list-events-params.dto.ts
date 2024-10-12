@@ -1,44 +1,16 @@
-import { Transform } from 'class-transformer';
-import { IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
+import { ParseInt } from 'src/shared/transformers/parse-int.transformer';
+import { SortBy } from 'src/shared/constants/sort-by.constant';
+import { SortOrder } from 'src/shared/constants/sort-order.constant';
 
 export class ListEventsParamsReqDto {
-  @Transform(
-    (params) => {
-      const { value } = params;
-
-      if (typeof value !== 'string') {
-        return undefined;
-      }
-
-      const parsedValue = parseInt(value, 10);
-
-      return parsedValue;
-    },
-    {
-      toClassOnly: true,
-    },
-  )
+  @ParseInt()
   @IsOptional()
   @IsInt()
   @IsPositive()
   page?: number;
 
-  @Transform(
-    (params) => {
-      const { value } = params;
-
-      if (typeof value !== 'string') {
-        return undefined;
-      }
-
-      const parsedValue = parseInt(value, 10);
-
-      return parsedValue;
-    },
-    {
-      toClassOnly: true,
-    },
-  )
+  @ParseInt()
   @IsOptional()
   @IsInt()
   @IsPositive()
@@ -48,4 +20,14 @@ export class ListEventsParamsReqDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @IsOptional()
+  @IsEnum(SortBy)
+  @IsString()
+  sort_by?: SortBy;
+
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @IsString()
+  sort_order?: SortOrder;
 }
