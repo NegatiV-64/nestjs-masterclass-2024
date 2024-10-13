@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, ParseUUIDPipe, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventReqDto } from './dto/requests';
 import { ListEventsParamsReqDto } from './dto/requests/list-events-params.dto';
@@ -46,5 +46,60 @@ export class EventsController {
     return {
       data: foundEvent,
     };
+  }
+
+  @Patch(':eventId')
+  async patchEventById(
+    @Param(
+      'eventId',
+      new ParseUUIDPipe({
+        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
+        version: '4',
+      }),
+    )
+    eventId: string,
+    @Body() event: CreateEventReqDto,
+  ) {
+    const updatedEvent = await this.eventsService.updateEvent(eventId, event);
+    if (!updatedEvent) {
+      throw new NotFoundException(`Event with id ${eventId} not found`);
+    }
+
+    return updatedEvent;
+  }
+  @Delete(':eventId')
+  async deleteEventById(
+    @Param(
+      'eventId',
+      new ParseUUIDPipe({
+        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
+        version: '4',
+      }),
+    )
+    eventId: string,
+  ) {
+    const deletedEvent = await this.eventsService.deleteEvent(eventId);
+    if (!deletedEvent) {
+      throw new NotFoundException(`Event with id ${eventId} not found`);
+    }
+    return {
+      message: 'Event deleted successfully',
+    };
+  }
+
+  @Get()
+  async sortEvents(
+    @Query('sort_by') sortBy: string = 'eventName', 
+    @Query('sort_order') sortOrder: string = 'asc', 
+  ) {
+    console.log(`Received sortBy: ${sortBy}, sortOrder: ${sortOrder}`);
+
+    try {
+      const sortedEvents = await this.eventsService.sortEvents(sortBy, sortOrder);
+      return sortedEvents;
+    } catch (error) {
+      console.error('Error while fetching sorted events:', error);
+      throw error; 
+    }
   }
 }

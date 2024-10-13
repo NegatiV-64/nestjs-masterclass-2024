@@ -65,4 +65,59 @@ export class EventsService {
 
     return events;
   }
+  async updateEvent(eventId: string, event: CreateEventReqDto) {
+    const foundEvent = await this.databaseService.event.findUnique({
+      where: {
+        eventId,
+      },
+    });
+
+    if (!foundEvent) {
+      throw new NotFoundException(`Event with id ${eventId} not found`);
+    }
+
+    const updatedEvent = await this.databaseService.event.update({
+      where: {
+        eventId,
+      },
+      data: {
+        eventName: event.eventName,
+        eventDescription: event.eventDescription,
+        eventLocation: event.eventLocation,
+        eventDate: new Date(event.eventDate),
+      },
+    });
+    return updatedEvent;
+  }
+  async deleteEvent(eventId: string) {
+    const foundEvent = await this.databaseService.event.findUnique({
+      where: {
+        eventId,
+      },
+    });
+    if (!foundEvent) {
+      throw new NotFoundException(`Event with id ${eventId} not found`);
+    }
+    await this.databaseService.event.delete({
+      where: {
+        eventId,
+      },
+    });
+    return 'Event deleted successfully';
+  }
+  async sortEvents(sortBy: string, sortOrder: string) {
+    console.log(`Sorting events by: ${sortBy}, sortOrder: ${sortOrder}`);
+
+    try {
+      const events = await this.databaseService.event.findMany({
+        orderBy: {
+          [sortBy]: sortOrder
+        },
+      });
+      return events;
+    } catch (error) {
+      console.error('Error while querying the database:', error);
+      throw error; 
+    }
+  }
 }
