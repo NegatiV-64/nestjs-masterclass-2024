@@ -1,7 +1,6 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { CreateTicketDto } from './dto/create-ticket-dto';
-import axios from 'axios';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
@@ -13,7 +12,7 @@ export class TicketsService {
     private readonly httpService: HttpService,
   ) {}
 
-  async createTicket(createTicketDto: CreateTicketDto) {
+  async createTicket(createTicketDto: CreateTicketDto, userId: string): Promise<CreateTicketDto> {
     try {
       if (createTicketDto.ticketQuantity <= 0) {
         throw new BadRequestException('Ticket quantity must be greater than zero');
@@ -35,6 +34,7 @@ export class TicketsService {
           ticketPrice: createTicketDto.ticketPrice,
           ticketQuantity: createTicketDto.ticketQuantity,
           ticketEventId: createTicketDto.ticketEventId,
+          ticketUserId: userId,
         },
       });
 
@@ -54,13 +54,13 @@ export class TicketsService {
     }
   }
 
-  async getTicketById(ticketId: string, userId: string) {
+  async getOneTicketOfUser(userId: string) {
     try {
       return await this.databaseService.ticket.findFirst({
         where: {
-          ticketId: ticketId,
           ticketUserId: userId,
-        },
+          },
+          take: 1
       });
     } catch (error) {
       throw new Error('Error fetching ticket');

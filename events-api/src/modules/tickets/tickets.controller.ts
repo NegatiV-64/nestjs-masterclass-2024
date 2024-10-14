@@ -3,6 +3,7 @@ import { TicketsService } from './tickets.service';
 import { AuthTokenGuard } from '../../shared/guards/auth-token.guard';
 import { CreateTicketDto } from './dto/create-ticket-dto';
 import { CreatePaymentDto } from './dto/create-payment.dto';
+import { REQUEST } from '@nestjs/core';
 
 @Controller('tickets')
 export class TicketsController {
@@ -10,22 +11,22 @@ export class TicketsController {
 
   @UseGuards(AuthTokenGuard)
   @Post()
-  async createTicket(@Body() createTicketDto: CreateTicketDto) {
-    return this.ticketService.createTicket(createTicketDto);
+  async createTicket(@Body() createTicketDto: CreateTicketDto, @Request() req) {
+      const userId = req.user.userId;
+    return this.ticketService.createTicket(createTicketDto, userId);
   }
 
   @UseGuards(AuthTokenGuard)
   @Get()
   async getAllTickets(@Request() req) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     return this.ticketService.getAllTicketsByUserId(userId);
   }
 
   @UseGuards(AuthTokenGuard)
   @Get(':id')
-  async getTicketById(@Param('id') ticketId: string, @Request() req) {
-    const userId = req.user.id;
-    const ticket = await this.ticketService.getTicketById(ticketId, userId);
+  async getTicketById(@Param('id') userId:string,  @Request() req) {
+    const ticket = await this.ticketService.getOneTicketOfUser(userId);
 
     if (!ticket) {
       throw new BadRequestException('Ticket not found or does not belong to the authenticated user');
@@ -42,7 +43,7 @@ export class TicketsController {
     createPaymentDto: CreatePaymentDto,
     @Request() req,
   ) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const paymentResult = await this.ticketService.payForTicket(ticketId, userId, createPaymentDto);
 
     if (paymentResult) {
@@ -55,7 +56,7 @@ export class TicketsController {
   @Put(':id/cancel')
   @UseGuards(AuthTokenGuard)
   async cancelTicket(@Param('id') ticketId: string, @Request() req) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const cancellationResult = await this.ticketService.cancelTicket(ticketId, userId);
 
     if (cancellationResult) {
