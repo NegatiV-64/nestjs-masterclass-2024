@@ -1,9 +1,10 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { CreateTicketDto } from './dto/create-ticket-dto';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
+import { ApiFailedDependencyResponse } from '@nestjs/swagger';
 
 @Injectable()
 export class TicketsService {
@@ -86,34 +87,30 @@ export class TicketsService {
 
       return response.data;
     } catch (error) {
-      throw new BadRequestException('Payment API call failed', error.response?.data || error.message);
+      throw new InternalServerErrorException('Payment API call failed', error.response?.data || error.message);
     }
   }
   async cancelTicket(ticketId: string, userId: string) {
-    try {
-      const ticket = await this.databaseService.ticket.findFirst({
-        where: {
-          ticketId,
-          ticketUserId: userId,
-        },
-      });
+    const ticket = await this.databaseService.ticket.findFirst({
+      where: {
+        ticketId,
+        ticketUserId: userId,
+      },
+    });
 
-      if (!ticket) {
-        throw new BadRequestException('Ticket not found or not owned by the user');
-      }
-
-      await this.databaseService.ticket.update({
-        where: {
-          ticketId,
-        },
-        data: {
-          ticketStatus: 'cancelled',
-        },
-      });
-
-      return { message: 'Ticket canceled successfully' };
-    } catch (error) {
-      throw new BadRequestException(error);
+    if (!ticket) {
+      throw new BadRequestException('Ticket not found or not owned by the user');
     }
+
+    await this.databaseService.ticket.update({
+      where: {
+        ticketId,
+      },
+      data: {
+        ticketStatus: 'cancelled',
+      },
+    });
+
+    return { message: 'Ticket canceled successfully' };
   }
 }
