@@ -14,13 +14,6 @@ export class TicketsService {
 
   async createTicket(createTicketDto: CreateTicketDto, userId: string): Promise<CreateTicketDto> {
     try {
-      if (createTicketDto.ticketQuantity <= 0) {
-        throw new BadRequestException('Ticket quantity must be greater than zero');
-      }
-      if (createTicketDto.ticketPrice <= 0) {
-        throw new BadRequestException('Ticket price must be greater than zero');
-      }
-
       const existingEvent = await this.databaseService.event.findUnique({
         where: { eventId: createTicketDto.ticketEventId },
       });

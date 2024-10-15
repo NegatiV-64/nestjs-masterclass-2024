@@ -6,14 +6,14 @@ export class CreateTicketDto {
     description: 'The quantity of tickets being purchased',
     example: 2,
   })
-  @IsPositive()
+  @IsPositive({ message: 'Ticket quantity must be greater than zero' })
   ticketQuantity: number;
 
   @ApiProperty({
     description: 'The price per ticket',
     example: 50,
   })
-  @IsPositive()
+  @IsPositive({ message: 'Ticket quantity must be greater than zero' })
   ticketPrice: number;
 
   @ApiProperty({
