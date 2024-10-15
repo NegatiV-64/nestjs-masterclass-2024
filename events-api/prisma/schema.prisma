@@ -21,8 +21,8 @@ model Event {
 model User {
   userId        String   @id @default(uuid()) @map("user_id")
   userEmail     String   @unique @map("user_email")
-  userFirstName String?  @map("user_first_name")
-  userLastName  String?  @map("user_last_name")
+  userFirstName String  @map("user_first_name")
+  userLastName  String  @map("user_last_name")
   userPassword  String   @map("user_password")
   userRole      String   @default("user") @map("user_role")
   userCreatedAt DateTime @default(now()) @map("user_created_at")
@@ -34,13 +34,13 @@ model Ticket {
   ticketId           String   @id @default(uuid()) @map("ticket_id")
   ticketQuantity     Int       
   ticketPrice        Float     
-  ticketStatus       String?   @default("pending")
+  ticketStatus       String   @default("pending")
   ticketCreatedAt    DateTime  @default(now()) 
   ticketUpdatedAt    DateTime  @updatedAt 
   ticketTransactionId String    @default(uuid()) 
   ticketEventId      String      
-  ticketUserId       String?       
+  ticketUserId       String       
 
   event              Event     @relation(fields: [ticketEventId], references: [eventId])
-  user               User?     @relation(fields: [ticketUserId], references: [userId])
+  user               User     @relation(fields: [ticketUserId], references: [userId])
 }
