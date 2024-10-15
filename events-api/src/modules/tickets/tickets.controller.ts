@@ -60,4 +60,14 @@ export class TicketsController {
       data: paidTicket,
     };
   }
+
+  @Put(':ticketId/cancel')
+  @UseGuards(AuthTokenGuard)
+  async cancelTicket(@Param('ticketId', new ParseUUIDPipe(UUIDPipeOptions)) ticketId: string, @Request() req: AuthRequest) {
+    const canceledTicket = await this.ticketsService.cancelTicket(ticketId, req.user.userId);
+
+    return {
+      data: canceledTicket,
+    };
+  }
 }

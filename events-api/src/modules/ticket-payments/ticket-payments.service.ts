@@ -37,8 +37,6 @@ export class TicketPaymentsService {
         ),
     );
 
-    console.log(paymentResponse);
-
     return paymentResponse.data;
   }
 }
