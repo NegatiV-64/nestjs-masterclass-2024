@@ -92,11 +92,8 @@ export class EventsController {
     eventId: string,
   ) {
     const deletedEvent = await this.eventsService.deleteEvent(eventId);
-    if (!deletedEvent) {
-      throw new NotFoundException(`Event with id ${eventId} not found`);
-    }
     return {
-      message: 'Event deleted successfully',
+      deletedEvent
     };
   }
 
@@ -104,14 +101,7 @@ export class EventsController {
   @ApiOperation({ summary: 'Sort events' })
   @ApiResponse({ status: 200, description: 'Events sorted successfully.' })
   async sortEvents(@Query('sort_by') sortBy: string = 'eventName', @Query('sort_order') sortOrder: string = 'asc') {
-    console.log(`Received sortBy: ${sortBy}, sortOrder: ${sortOrder}`);
-
-    try {
-      const sortedEvents = await this.eventsService.sortEvents(sortBy, sortOrder);
-      return sortedEvents;
-    } catch (error) {
-      console.error('Error while fetching sorted events:', error);
-      throw error;
-    }
+    const sortedEvents = await this.eventsService.sortEvents(sortBy, sortOrder);
+    return sortedEvents;
   }
 }
