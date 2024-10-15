@@ -44,5 +44,13 @@ export class EventsService {
     return await this.eventsRepository.update(dto, eventId);
   }
 
+  async deleteEvent(eventId: string) {
+    const event = await this.eventsRepository.getById(eventId);
+
+    if (!event) {
+      throw new BadRequestException(`Event with id ${eventId} not found`);
+    }
+
+    return await this.eventsRepository.delete(eventId);
   }
 }

@@ -61,4 +61,15 @@ export class EventsController {
       data: updatedEvent,
     };
   }
+
+  @Delete(':eventId')
+  @Roles(UserRole.Admin)
+  @UseGuards(AuthTokenGuard, RolesGuard)
+  async deleteEvent(@Param('eventId', new ParseUUIDPipe(UUIDPipeOptions)) eventId: string) {
+    const deletedEvent = await this.eventsService.deleteEvent(eventId);
+
+    return {
+      data: deletedEvent,
+    };
+  }
 }

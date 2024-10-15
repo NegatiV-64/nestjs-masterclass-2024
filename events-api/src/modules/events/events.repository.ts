@@ -74,3 +74,11 @@ export class EventsRepository {
     });
   }
 
+  async delete(eventId: string) {
+    return await this.databaseService.event.delete({
+      where: {
+        eventId,
+      },
+    });
+  }
+}
