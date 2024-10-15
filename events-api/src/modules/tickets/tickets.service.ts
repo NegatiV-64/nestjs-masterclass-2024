@@ -2,12 +2,15 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { TicketsRepository } from './tickets.repository';
 import { ListTicketsParamsReqDto } from './dto/requests/list-tickets-params.dto';
 import { CreateTicketWithUser } from './types/create-ticket-with-user.type';
+import { TicketPaymentsService } from '../ticket-payments/ticket-payments.service';
+import { PayTicketReqDto } from './dto/requests/pay-ticket.dto';
 import { EventsRepository } from '../events/events.repository';
 
 @Injectable()
 export class TicketsService {
   constructor(
     private readonly ticketsRepository: TicketsRepository,
+    private readonly ticketPaymentsService: TicketPaymentsService,
     private readonly eventsRepository: EventsRepository,
   ) {}
 
@@ -37,5 +40,19 @@ export class TicketsService {
     }
 
     return foundTicket;
+  }
+
+  async payForTicket(dto: PayTicketReqDto, ticketId: string, ticketUserId: string) {
+    const ticket = await this.getTicketById(ticketId, ticketUserId);
+
+    if (ticket.ticketStatus === 'paid') {
+      throw new BadRequestException('Ticket is already paid');
+    }
+
+    const payment = await this.ticketPaymentsService.processPayment(dto);
+
+    const updatedTicket = await this.ticketsRepository.updateById(ticketId, { ticketStatus: 'paid', ticketTransactionId: payment.transactionId });
+
+    return updatedTicket;
   }
 }

@@ -49,4 +49,13 @@ export class TicketsRepository {
       },
     });
   }
+
+  async updateById(ticketId: string, dto: Prisma.TicketUpdateInput): Promise<Ticket> {
+    return await this.databaseService.ticket.update({
+      where: {
+        ticketId,
+      },
+      data: dto,
+    });
+  }
 }

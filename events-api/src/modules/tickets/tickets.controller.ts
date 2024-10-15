@@ -4,6 +4,7 @@ import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
 import { TicketsService } from './tickets.service';
 import { CreateTicketReqDto } from './dto/requests/create-ticket.dto';
 import { ListTicketsParamsReqDto } from './dto/requests/list-tickets-params.dto';
+import { PayTicketReqDto } from './dto/requests/pay-ticket.dto';
 import { SnakeToCamelCasePipe } from 'src/shared/pipes/snake-to-camel-case.pipe';
 import { AuthRequest } from 'src/shared/types/auth-request.type';
 
@@ -43,6 +44,20 @@ export class TicketsController {
 
     return {
       data: foundTicket,
+    };
+  }
+
+  @Put(':ticketId/pay')
+  @UseGuards(AuthTokenGuard)
+  async payTicket(
+    @Param('ticketId', new ParseUUIDPipe(UUIDPipeOptions)) ticketId: string,
+    @Request() req: AuthRequest,
+    @Body() dto: PayTicketReqDto,
+  ) {
+    const paidTicket = await this.ticketsService.payForTicket(dto, ticketId, req.user.userId);
+
+    return {
+      data: paidTicket,
     };
   }
 }
