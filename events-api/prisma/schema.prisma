@@ -32,14 +32,14 @@ model User {
 
 model Ticket {
   ticketId           String   @id @default(uuid()) @map("ticket_id")
-  ticketQuantity     Int       
-  ticketPrice        Float     
-  ticketStatus       String   @default("pending")
-  ticketCreatedAt    DateTime  @default(now()) 
-  ticketUpdatedAt    DateTime  @updatedAt 
-  ticketTransactionId String    @default(uuid()) 
-  ticketEventId      String      
-  ticketUserId       String       
+  ticketQuantity     Int      @map("ticketQuantity") 
+  ticketPrice        Float     @map("ticketPrice")
+  ticketStatus       String   @default("pending")@map("ticketStatus")
+  ticketCreatedAt    DateTime  @default(now()) @map("ticketCreatedAt")
+  ticketUpdatedAt    DateTime  @updatedAt @map("ticketUpdatedAt")
+  ticketTransactionId String    @default(uuid()) @map("ticketTransactionId")
+  ticketEventId      String      @map("ticketEventId")
+  ticketUserId       String       @map("ticketUserId")
 
   event              Event     @relation(fields: [ticketEventId], references: [eventId])
   user               User     @relation(fields: [ticketUserId], references: [userId])
