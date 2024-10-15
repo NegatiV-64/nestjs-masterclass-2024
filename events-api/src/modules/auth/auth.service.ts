@@ -26,6 +26,7 @@ export class AuthService {
         userEmail: email,
       },
     });
+
     if (existingUser) {
       throw new BadRequestException('Email already exists in the system');
     }
@@ -37,11 +38,12 @@ export class AuthService {
       },
     });
 
-    const authToken = await this.generateAuthToken({
+    const payload = {
       sub: user.userId,
       userEmail: user.userEmail,
       userRole: user.userRole as UserRole,
-    });
+    };
+    const authToken = await this.generateAuthToken(payload);
 
     return {
       authToken,

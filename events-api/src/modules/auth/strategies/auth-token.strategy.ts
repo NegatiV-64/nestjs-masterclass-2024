@@ -27,7 +27,7 @@ export class AuthTokenStrategy extends PassportStrategy(Strategy, AuthConfig.Aut
     return {
       userId: sub,
       userEmail,
-      userRole: userRole,
+      userRole,
     };
   }
 }
