@@ -15,15 +15,32 @@ model Event {
   eventDate        DateTime @map("event_date")
   eventCreatedAt   DateTime @default(now()) @map("event_created_at")
   eventUpdatedAt   DateTime @default(now()) @updatedAt @map("event_updated_at")
+  tickets   Ticket[]
 }
 
 model User {
   userId        String   @id @default(uuid()) @map("user_id")
   userEmail     String   @unique @map("user_email")
-  userFirstName String?  @map("user_first_name")
-  userLastName  String?  @map("user_last_name")
+  userFirstName String  @map("user_first_name")
+  userLastName  String  @map("user_last_name")
   userPassword  String   @map("user_password")
   userRole      String   @default("user") @map("user_role")
   userCreatedAt DateTime @default(now()) @map("user_created_at")
   userUpdatedAt DateTime @default(now()) @updatedAt @map("user_updated_at")
+  tickets   Ticket[]
+}
+
+model Ticket {
+  ticketId           String   @id @default(uuid()) @map("ticket_id")
+  ticketQuantity     Int      @map("ticketQuantity") 
+  ticketPrice        Float     @map("ticketPrice")
+  ticketStatus       String   @default("pending")@map("ticketStatus")
+  ticketCreatedAt    DateTime  @default(now()) @map("ticketCreatedAt")
+  ticketUpdatedAt    DateTime  @updatedAt @map("ticketUpdatedAt")
+  ticketTransactionId String    @default(uuid()) @map("ticketTransactionId")
+  ticketEventId      String      @map("ticketEventId")
+  ticketUserId       String       @map("ticketUserId")
+
+  event              Event     @relation(fields: [ticketEventId], references: [eventId])
+  user               User     @relation(fields: [ticketUserId], references: [userId])
 }
