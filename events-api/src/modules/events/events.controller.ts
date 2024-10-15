@@ -74,10 +74,6 @@ export class EventsController {
     @Body() event: CreateEventReqDto,
   ) {
     const updatedEvent = await this.eventsService.updateEvent(eventId, event);
-    if (!updatedEvent) {
-      throw new NotFoundException(`Event with id ${eventId} not found`);
-    }
-
     return updatedEvent;
   }
 
