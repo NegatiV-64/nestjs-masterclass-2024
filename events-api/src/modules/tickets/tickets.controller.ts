@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Query, Request, UseGuards, UsePipes } from '@nestjs/common';
-import { UUIDPipeOptions } from 'src/shared/constants/uuid-pipe-options.constant';
+import { UUID4PipeOptions } from 'src/shared/constants/uuid4-pipe-options.constant';
 import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
 import { TicketsService } from './tickets.service';
 import { CreateTicketReqDto } from './dto/requests/create-ticket.dto';
@@ -36,7 +36,7 @@ export class TicketsController {
   @Get(':ticketId')
   @UseGuards(AuthTokenGuard)
   async getTicketById(
-    @Param('ticketId', new ParseUUIDPipe(UUIDPipeOptions))
+    @Param('ticketId', new ParseUUIDPipe(UUID4PipeOptions))
     ticketId: string,
     @Request() req: AuthRequest,
   ) {
@@ -50,7 +50,7 @@ export class TicketsController {
   @Put(':ticketId/pay')
   @UseGuards(AuthTokenGuard)
   async payTicket(
-    @Param('ticketId', new ParseUUIDPipe(UUIDPipeOptions)) ticketId: string,
+    @Param('ticketId', new ParseUUIDPipe(UUID4PipeOptions)) ticketId: string,
     @Request() req: AuthRequest,
     @Body() dto: PayTicketReqDto,
   ) {
@@ -63,7 +63,7 @@ export class TicketsController {
 
   @Put(':ticketId/cancel')
   @UseGuards(AuthTokenGuard)
-  async cancelTicket(@Param('ticketId', new ParseUUIDPipe(UUIDPipeOptions)) ticketId: string, @Request() req: AuthRequest) {
+  async cancelTicket(@Param('ticketId', new ParseUUIDPipe(UUID4PipeOptions)) ticketId: string, @Request() req: AuthRequest) {
     const canceledTicket = await this.ticketsService.cancelTicket(ticketId, req.user.userId);
 
     return {

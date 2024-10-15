@@ -5,7 +5,7 @@ import { ListEventsParamsReqDto } from './dto/requests/list-events-params.dto';
 import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
 import { Roles, RolesGuard } from 'src/shared/guards/roles.guard';
 import { UserRole } from 'src/shared/constants/user-role.constant';
-import { UUIDPipeOptions } from 'src/shared/constants/uuid-pipe-options.constant';
+import { UUID4PipeOptions } from 'src/shared/constants/uuid4-pipe-options.constant';
 import { UpdateEventReqDto } from './dto/requests/update-event.dto';
 import { SnakeToCamelCasePipe } from 'src/shared/pipes/snake-to-camel-case.pipe';
 
@@ -36,7 +36,7 @@ export class EventsController {
 
   @Get(':eventId')
   async getEventById(
-    @Param('eventId', new ParseUUIDPipe(UUIDPipeOptions))
+    @Param('eventId', new ParseUUIDPipe(UUID4PipeOptions))
     eventId: string,
   ) {
     const foundEvent = await this.eventsService.getEventById(eventId);
@@ -50,7 +50,7 @@ export class EventsController {
   @Roles(UserRole.Admin)
   @UseGuards(AuthTokenGuard, RolesGuard)
   async updateEvent(
-    @Param('eventId', new ParseUUIDPipe(UUIDPipeOptions))
+    @Param('eventId', new ParseUUIDPipe(UUID4PipeOptions))
     eventId: string,
     @Body()
     dto: UpdateEventReqDto,
@@ -65,7 +65,7 @@ export class EventsController {
   @Delete(':eventId')
   @Roles(UserRole.Admin)
   @UseGuards(AuthTokenGuard, RolesGuard)
-  async deleteEvent(@Param('eventId', new ParseUUIDPipe(UUIDPipeOptions)) eventId: string) {
+  async deleteEvent(@Param('eventId', new ParseUUIDPipe(UUID4PipeOptions)) eventId: string) {
     const deletedEvent = await this.eventsService.deleteEvent(eventId);
 
     return {
