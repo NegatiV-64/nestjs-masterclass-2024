@@ -5,7 +5,9 @@ import { ListEventsParamsReqDto } from './dto/requests/list-events-params.dto';
 import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
 import { Roles, RolesGuard } from 'src/shared/guards/roles.guard';
 import { UserRole } from 'src/shared/constants/user-role.constant';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('events')
 @Controller('events')
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
@@ -13,6 +15,9 @@ export class EventsController {
   @Post()
   @Roles(UserRole.Admin)
   @UseGuards(AuthTokenGuard, RolesGuard)
+  @ApiOperation({ summary: 'Create a new event' })
+  @ApiResponse({ status: 201, description: 'The event has been successfully created.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   public async createEvent(@Body() dto: CreateEventReqDto) {
     const createdEvent = await this.eventsService.createEvent(dto);
 
@@ -22,6 +27,8 @@ export class EventsController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'List all events' })
+  @ApiResponse({ status: 200, description: 'Returns a list of events.' })
   async listEvents(@Query() searchParams: ListEventsParamsReqDto) {
     const events = await this.eventsService.listEvents(searchParams);
 
@@ -31,6 +38,9 @@ export class EventsController {
   }
 
   @Get(':eventId')
+  @ApiOperation({ summary: 'Get event by ID' })
+  @ApiResponse({ status: 200, description: 'Returns the event data.' })
+  @ApiResponse({ status: 404, description: 'Event not found.' })
   async getEventById(
     @Param(
       'eventId',
@@ -49,6 +59,9 @@ export class EventsController {
   }
 
   @Patch(':eventId')
+  @ApiOperation({ summary: 'Update event by ID' })
+  @ApiResponse({ status: 200, description: 'Event updated successfully.' })
+  @ApiResponse({ status: 404, description: 'Event not found.' })
   async patchEventById(
     @Param(
       'eventId',
@@ -67,7 +80,11 @@ export class EventsController {
 
     return updatedEvent;
   }
+
   @Delete(':eventId')
+  @ApiOperation({ summary: 'Delete event by ID' })
+  @ApiResponse({ status: 200, description: 'Event deleted successfully.' })
+  @ApiResponse({ status: 404, description: 'Event not found.' })
   async deleteEventById(
     @Param(
       'eventId',
@@ -87,11 +104,10 @@ export class EventsController {
     };
   }
 
-  @Get()
-  async sortEvents(
-    @Query('sort_by') sortBy: string = 'eventName', 
-    @Query('sort_order') sortOrder: string = 'asc', 
-  ) {
+  @Get('/sort')
+  @ApiOperation({ summary: 'Sort events' })
+  @ApiResponse({ status: 200, description: 'Events sorted successfully.' })
+  async sortEvents(@Query('sort_by') sortBy: string = 'eventName', @Query('sort_order') sortOrder: string = 'asc') {
     console.log(`Received sortBy: ${sortBy}, sortOrder: ${sortOrder}`);
 
     try {
@@ -99,7 +115,7 @@ export class EventsController {
       return sortedEvents;
     } catch (error) {
       console.error('Error while fetching sorted events:', error);
-      throw error; 
+      throw error;
     }
   }
 }
