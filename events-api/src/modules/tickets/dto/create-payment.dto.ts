@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsPositive, IsString, Length } from 'class-validator';
 import { IsDateFormatValid } from '../../../shared/validators/date-format.validator';
 import { TimeFormat } from '../../../shared/constants/time.constant';
 import { ApiProperty } from '@nestjs/swagger';
@@ -9,6 +9,8 @@ export class CreatePaymentDto {
     example: 1234,
   })
   @IsNotEmpty()
+  @IsPositive()
+  @Length(4, 4, { message: 'The last 4 digits must be exactly 4 characters long' })
   last4Digits: number;
 
   @ApiProperty({
