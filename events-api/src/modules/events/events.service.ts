@@ -98,26 +98,22 @@ export class EventsService {
     if (!foundEvent) {
       throw new NotFoundException(`Event with id ${eventId} not found`);
     }
-    await this.databaseService.event.delete({
+    const deletedEvent = await this.databaseService.event.delete({
       where: {
         eventId,
       },
     });
-    return 'Event deleted successfully';
+    return deletedEvent;
   }
   async sortEvents(sortBy: string, sortOrder: string) {
-    console.log(`Sorting events by: ${sortBy}, sortOrder: ${sortOrder}`);
-
-    try {
-      const events = await this.databaseService.event.findMany({
-        orderBy: {
-          [sortBy]: sortOrder
-        },
-      });
-      return events;
-    } catch (error) {
-      console.error('Error while querying the database:', error);
-      throw error; 
+    const events = await this.databaseService.event.findMany({
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+    });
+    if (events.length === 0) {
+      return { message: 'No events found' };
     }
+    return events;
   }
 }
