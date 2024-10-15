@@ -3,6 +3,9 @@ import { UUIDPipeOptions } from 'src/shared/constants/uuid-pipe-options.constant
 import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
 import { TicketsService } from './tickets.service';
 import { CreateTicketReqDto } from './dto/requests/create-ticket.dto';
+import { ListTicketsParamsReqDto } from './dto/requests/list-tickets-params.dto';
+import { SnakeToCamelCasePipe } from 'src/shared/pipes/snake-to-camel-case.pipe';
+import { AuthRequest } from 'src/shared/types/auth-request.type';
 
 @Controller('tickets')
 export class TicketsController {
@@ -15,6 +18,31 @@ export class TicketsController {
 
     return {
       data: createdTicket,
+    };
+  }
+
+  @Get()
+  @UseGuards(AuthTokenGuard)
+  @UsePipes(new SnakeToCamelCasePipe())
+  async listTickets(@Query() searchParams: ListTicketsParamsReqDto, @Request() req: AuthRequest) {
+    const tickets = await this.ticketsService.listTickets(searchParams, req.user.userId);
+
+    return {
+      data: tickets,
+    };
+  }
+
+  @Get(':ticketId')
+  @UseGuards(AuthTokenGuard)
+  async getTicketById(
+    @Param('ticketId', new ParseUUIDPipe(UUIDPipeOptions))
+    ticketId: string,
+    @Request() req: AuthRequest,
+  ) {
+    const foundTicket = await this.ticketsService.getTicketById(ticketId, req.user.userId);
+
+    return {
+      data: foundTicket,
     };
   }
 }
