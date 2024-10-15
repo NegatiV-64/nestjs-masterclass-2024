@@ -5,6 +5,7 @@ import { CreateTicketDto } from './dto/create-ticket-dto';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { User } from '../../shared/decorators/getUserId-from-request.decorator';
+import { TicketIdDto } from './dto/param-uuid-validate.dto';
 
 @ApiTags('Tickets')
 @Controller('tickets')
@@ -36,7 +37,8 @@ export class TicketsController {
   @ApiOperation({ summary: 'Get a specific ticket by its ID' })
   @ApiResponse({ status: 200, description: 'Returns the ticket details.' })
   @ApiResponse({ status: 400, description: 'Ticket not found or does not belong to the authenticated user.' })
-  async getTicketById(@Param('id') ticketId: string) {
+  async getTicketById(@Param() params: TicketIdDto) {
+    const { ticketId } = params; 
     const ticket = await this.ticketService.getOneTicketOfUser(ticketId);
 
     if (!ticket) {
