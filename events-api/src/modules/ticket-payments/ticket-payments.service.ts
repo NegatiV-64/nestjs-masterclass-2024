@@ -5,6 +5,9 @@ import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { EnvConfig } from 'src/shared/configs/env.config';
+import { plainToClass } from 'class-transformer';
+import { TicketPaymentResponseDto } from './dto/responses/ticket-payment-response.dto';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class TicketPaymentsService {
@@ -36,6 +39,13 @@ export class TicketPaymentsService {
           }),
         ),
     );
+
+    const paymentResponseDto = plainToClass(TicketPaymentResponseDto, paymentResponse.data);
+    const errors = await validate(paymentResponseDto);
+
+    if (errors.length > 0) {
+      throw new BadRequestException('Payment failed. Invalid payment response data');
+    }
 
     return paymentResponse.data;
   }
