@@ -19,7 +19,7 @@ export class CreatePaymentDto {
   })
   @IsString()
   @IsNotEmpty()
-  @IsDateFormatValid(TimeFormat.MMYY)
+  @IsDateFormatValid(TimeFormat.CalendarForCard)
   cardExpiry: string;
 
   @ApiProperty({

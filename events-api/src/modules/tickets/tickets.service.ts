@@ -13,29 +13,24 @@ export class TicketsService {
   ) {}
 
   async createTicket(createTicketDto: CreateTicketDto, userId: string): Promise<CreateTicketDto> {
-    try {
-      const existingEvent = await this.databaseService.event.findUnique({
-        where: { eventId: createTicketDto.ticketEventId },
-      });
+    const existingEvent = await this.databaseService.event.findUnique({
+      where: { eventId: createTicketDto.ticketEventId },
+    });
 
-      if (!existingEvent) {
-        throw new BadRequestException('Event not found');
-      }
-
-      const createdTicket = await this.databaseService.ticket.create({
-        data: {
-          ticketPrice: createTicketDto.ticketPrice,
-          ticketQuantity: createTicketDto.ticketQuantity,
-          ticketEventId: createTicketDto.ticketEventId,
-          ticketUserId: userId,
-        },
-      });
-
-      return createdTicket;
-    } catch (error) {
-      console.log(error);
-      throw new BadRequestException('Error creating ticket');
+    if (!existingEvent) {
+      throw new BadRequestException('Event not found');
     }
+
+    const createdTicket = await this.databaseService.ticket.create({
+      data: {
+        ticketPrice: createTicketDto.ticketPrice,
+        ticketQuantity: createTicketDto.ticketQuantity,
+        ticketEventId: createTicketDto.ticketEventId,
+        ticketUserId: userId,
+      },
+    });
+
+    return createdTicket;
   }
   async getAllTicketsByUserId(userId: string) {
     try {
@@ -48,18 +43,15 @@ export class TicketsService {
   }
 
   async getOneTicketOfUser(userId: string) {
-    try {
-      return await this.databaseService.ticket.findFirst({
-        where: {
-          ticketUserId: userId,
-          },
-          take: 1
-      });
-    } catch (error) {
-      throw new Error('Error fetching ticket');
-    }
+    return await this.databaseService.ticket.findFirst({
+      where: {
+        ticketUserId: userId,
+      },
+      take: 1,
+    });
   }
   async payForTicket(ticketId: string, userId: string, paymentDetails: CreatePaymentDto) {
+    const paymentApiUrl = process.env.PAYMENT_API_URL || 'http://localhost:3030/payment';
     const ticket = await this.databaseService.ticket.findFirst({
       where: {
         ticketId,
@@ -73,15 +65,10 @@ export class TicketsService {
 
     const { last4Digits, cardExpiry, cardHolderName, paymentToken, paymentAmount } = paymentDetails;
 
-    if (!last4Digits || !cardExpiry || !cardHolderName || !paymentToken || !paymentAmount) {
-      throw new BadRequestException('All fields are required');
-    }
-    console.log(paymentToken);
-
     try {
       const response = await lastValueFrom(
         this.httpService.post(
-          'http://localhost:3030/payment', // Payment API URL from .env
+          paymentApiUrl,
           {
             last4: last4Digits,
             expiration: cardExpiry,
@@ -97,13 +84,8 @@ export class TicketsService {
         ),
       );
 
-      if (response) {
-        return response.data;
-      } else {
-        throw new HttpException('Payment failed', HttpStatus.BAD_REQUEST);
-      }
+      return response.data;
     } catch (error) {
-      console.log(error.response.data);
       throw new BadRequestException('Payment API call failed', error.response?.data || error.message);
     }
   }
