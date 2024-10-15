@@ -1,10 +1,12 @@
-import { Body, Controller, Get, HttpStatus, Param, ParseUUIDPipe, Post, Query, UseGuards } from '@nestjs/common';
+import { ParsingUUIDPipe } from '../../shared/pipes/uuid-params.pipe';
+import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventReqDto } from './dto/requests';
 import { ListEventsParamsReqDto } from './dto/requests/list-events-params.dto';
 import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
 import { Roles, RolesGuard } from 'src/shared/guards/roles.guard';
 import { UserRole } from 'src/shared/constants/user-role.constant';
+import { UpdateEventReqDto } from './dto/requests/update-event.dto';
 
 @Controller('events')
 export class EventsController {
@@ -32,19 +34,41 @@ export class EventsController {
 
   @Get(':eventId')
   async getEventById(
-    @Param(
-      'eventId',
-      new ParseUUIDPipe({
-        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
-        version: '4',
-      }),
-    )
+    @Param('eventId', ParsingUUIDPipe)
     eventId: string,
   ) {
     const foundEvent = await this.eventsService.getEventById(eventId);
 
     return {
       data: foundEvent,
+    };
+  }
+
+  @Patch(':eventId')
+  @Roles(UserRole.Admin)
+  @UseGuards(AuthTokenGuard, RolesGuard)
+  public async updateEvent(
+    @Param('eventId', ParsingUUIDPipe)
+    eventId: string,
+
+    @Body() dto: UpdateEventReqDto
+  ) {
+    const updatedEvent = await this.eventsService.updateEvent(eventId, dto);
+
+    return {
+      data: updatedEvent,
+    };
+  }
+
+  @Delete(':eventId')
+  async deleteEvent(
+    @Param('eventId', ParsingUUIDPipe)
+    eventId: string,
+  ) {
+    const deletedEvent = await this.eventsService.deleteEventById(eventId);
+
+    return {
+      data: deletedEvent,
     };
   }
 }

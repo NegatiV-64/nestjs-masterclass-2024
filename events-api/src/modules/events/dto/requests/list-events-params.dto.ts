@@ -1,5 +1,7 @@
+import { SortOrderEnum } from './../../types/query.type';
 import { Transform } from 'class-transformer';
-import { IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
+import { EventSortEnum } from '../../types/query.type';
 
 export class ListEventsParamsReqDto {
   @Transform(
@@ -48,4 +50,14 @@ export class ListEventsParamsReqDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @IsOptional()
+  @IsEnum(EventSortEnum, {
+    message: 'sort_by must be one of: eventName, eventDate, eventCreatedAt, eventUpdatedAt',
+  })
+  sort_by?: EventSortEnum;
+
+  @IsOptional()
+  @IsEnum(SortOrderEnum, { message: 'order must be either asc or desc' })
+  sort_order?: SortOrderEnum;
 }
