@@ -38,13 +38,8 @@ export class TicketsController {
   @ApiResponse({ status: 200, description: 'Returns the ticket details.' })
   @ApiResponse({ status: 400, description: 'Ticket not found or does not belong to the authenticated user.' })
   async getTicketById(@Param() params: TicketIdDto) {
-    const { ticketId } = params; 
+    const { ticketId } = params;
     const ticket = await this.ticketService.getOneTicketOfUser(ticketId);
-
-    if (!ticket) {
-      throw new BadRequestException('Ticket not found or does not belong to the authenticated user');
-    }
-
     return ticket;
   }
 
@@ -56,12 +51,7 @@ export class TicketsController {
   @ApiBody({ type: CreatePaymentDto })
   async payForTicket(@Param('id') ticketId: string, @Body() createPaymentDto: CreatePaymentDto, @User() userId: string) {
     const paymentResult = await this.ticketService.payForTicket(ticketId, userId, createPaymentDto);
-
-    if (paymentResult) {
-      return paymentResult;
-    } else {
-      throw new BadRequestException('Payment failed', paymentResult);
-    }
+    return paymentResult;
   }
 
   @Put(':id/cancel')
@@ -71,11 +61,6 @@ export class TicketsController {
   @ApiResponse({ status: 400, description: 'Ticket cancellation failed.' })
   async cancelTicket(@Param('id') ticketId: string, @User() userId: string) {
     const cancellationResult = await this.ticketService.cancelTicket(ticketId, userId);
-
-    if (cancellationResult) {
-      return cancellationResult;
-    } else {
-      throw new BadRequestException('Ticket cancellation failed', cancellationResult);
-    }
+    return cancellationResult;
   }
 }
