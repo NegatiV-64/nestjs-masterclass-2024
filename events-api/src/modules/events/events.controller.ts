@@ -6,6 +6,7 @@ import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
 import { Roles, RolesGuard } from 'src/shared/guards/roles.guard';
 import { UserRole } from 'src/shared/constants/user-role.constant';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { SortEventsDto } from './dto/requests/sort-events.dto';
 
 @ApiTags('events')
 @Controller('events')
@@ -97,11 +98,14 @@ export class EventsController {
     };
   }
 
-  @Get('/sort')
-  @ApiOperation({ summary: 'Sort events' })
-  @ApiResponse({ status: 200, description: 'Events sorted successfully.' })
-  async sortEvents(@Query('sort_by') sortBy: string = 'eventName', @Query('sort_order') sortOrder: string = 'asc') {
-    const sortedEvents = await this.eventsService.sortEvents(sortBy, sortOrder);
-    return sortedEvents;
-  }
+
+@Get('/sort')
+@ApiOperation({ summary: 'Sort events' })
+@ApiResponse({ status: 200, description: 'Events sorted successfully.' })
+async sortEvents(@Query() query: SortEventsDto) {
+  const { sort_by, sort_order } = query;
+  const sortedEvents = await this.eventsService.sortEvents(sort_by, sort_order);
+  return sortedEvents;
+}
+
 }
