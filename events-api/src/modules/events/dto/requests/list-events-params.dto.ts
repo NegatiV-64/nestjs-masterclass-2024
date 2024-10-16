@@ -5,18 +5,9 @@ export class ListEventsParamsReqDto {
   @Transform(
     (params) => {
       const { value } = params;
-
-      if (typeof value !== 'string') {
-        return undefined;
-      }
-
-      const parsedValue = parseInt(value, 10);
-
-      return parsedValue;
+      return typeof value === 'string' ? parseInt(value, 10) : undefined;
     },
-    {
-      toClassOnly: true,
-    },
+    { toClassOnly: true },
   )
   @IsOptional()
   @IsInt()
@@ -26,18 +17,9 @@ export class ListEventsParamsReqDto {
   @Transform(
     (params) => {
       const { value } = params;
-
-      if (typeof value !== 'string') {
-        return undefined;
-      }
-
-      const parsedValue = parseInt(value, 10);
-
-      return parsedValue;
+      return typeof value === 'string' ? parseInt(value, 10) : undefined;
     },
-    {
-      toClassOnly: true,
-    },
+    { toClassOnly: true },
   )
   @IsOptional()
   @IsInt()
@@ -48,4 +30,12 @@ export class ListEventsParamsReqDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @IsOptional()
+  @IsString()
+  sort_by?: 'eventName' | 'eventDate' | 'eventCreatedAt' | 'eventUpdatedAt';
+
+  @IsOptional()
+  @IsString()
+  sort_order?: 'asc' | 'desc';
 }
