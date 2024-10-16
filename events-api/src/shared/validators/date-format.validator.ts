@@ -2,6 +2,7 @@ import { registerDecorator, ValidationOptions, ValidationArguments } from 'class
 import { time } from '../libs/time.lib';
 import { TimeFormat } from '../constants/time.constant';
 import { ObjectValues } from '../types/utility.type';
+import dayjs from 'dayjs';
 
 export function IsDateFormatValid(format: ObjectValues<typeof TimeFormat>, validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
@@ -17,6 +18,10 @@ export function IsDateFormatValid(format: ObjectValues<typeof TimeFormat>, valid
 
           if (typeof value !== 'string') {
             return false;
+          }
+
+          if (format === TimeFormat.MonthYear) {
+            return dayjs(value, format, true).isValid();
           }
 
           const isValidDate = time(value, format, true).isValid();

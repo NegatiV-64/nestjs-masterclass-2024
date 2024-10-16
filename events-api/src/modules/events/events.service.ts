@@ -93,7 +93,7 @@ export class EventsService {
     return deletedEvent;
   }
 
-  private async verifyEventExistence(eventId: string) {
+  async verifyEventExistence(eventId: string) {
     const existingEvent = await this.databaseService.event.findUnique({
       where: {
         eventId,
@@ -108,7 +108,7 @@ export class EventsService {
     }
   }
 
-  private async verifyNameUniqueness(eventName: string) {
+  async verifyNameUniqueness(eventName: string) {
     const existingEventByName = await this.databaseService.event.findFirst({
       where: {
         eventName,

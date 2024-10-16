@@ -5,9 +5,12 @@ import { EnvConfig } from './shared/configs/env.config';
 import { ValidationConfig } from './shared/configs/validation.config';
 import { SwaggerModule } from '@nestjs/swagger';
 import { SwaggerConfig } from './shared/configs/swagger.config';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.use(helmet());
 
   const configService = app.get(ConfigService<EnvConfig>);
 
