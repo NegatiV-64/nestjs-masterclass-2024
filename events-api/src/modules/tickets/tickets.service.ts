@@ -29,15 +29,20 @@ export class TicketsService {
     return createdTicket
   }
 
-  async getTickets() {
-    const tickets = await this.databaseService.ticket.findMany({});
+  async getUserTickets(userId:string) {
+    const tickets = await this.databaseService.ticket.findMany({
+      where: {
+        ticketUserId: userId
+      }
+    });
 
     return tickets;
   }
 
-  async getTicketById(ticketId:string) {
+  async getUserTicketById(userId:string, ticketId:string) {
     const ticket = await this.databaseService.ticket.findFirst({
       where: {
+        ticketUserId: userId,
         ticketId,
       }
     })

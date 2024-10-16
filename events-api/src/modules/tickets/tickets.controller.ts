@@ -21,8 +21,8 @@ export class TicketsController {
 
   @Get()
   @UseGuards(AuthTokenGuard)
-  async getTickets(){
-    const tickets = await this.ticketsService.getTickets()
+  async getUserTickets(@UserId() userId:string){
+    const tickets = await this.ticketsService.getUserTickets(userId)
 
     return {
       data: tickets
@@ -31,11 +31,14 @@ export class TicketsController {
 
   @Get(':ticketId')
   @UseGuards(AuthTokenGuard)
-  async getTicketById(
+  async getUserTicketById(
+    @UserId()
+    userId:string,
+
     @Param('ticketId', ParsingUUIDPipe)
     ticketId:string
   ) {
-    const foundTicket = await this.ticketsService.getTicketById(ticketId)
+    const foundTicket = await this.ticketsService.getUserTicketById(userId, ticketId)
 
     return {
       data: foundTicket
