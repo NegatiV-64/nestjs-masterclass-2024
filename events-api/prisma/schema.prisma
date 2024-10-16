@@ -39,12 +39,10 @@ model Ticket {
   ticketStatus        String   @default("pending") @map("ticket_status")
   ticketCreatedAt     DateTime @default(now()) @map("ticket_created_at")
   ticketUpdatedAt     DateTime @default(now()) @updatedAt @map("ticket_updated_at")
-  ticketTransactionId String   @map("ticket_transaction_id")
+  ticketTransactionId String   @default(uuid()) @map("ticket_transaction_id")
   ticketEventId       String   @map("ticket_event_id")
   ticketUserId        String   @map("ticket_user_id")
 
   event Event @relation(fields: [ticketEventId], references: [eventId], onDelete: Cascade)
   user  User  @relation(fields: [ticketUserId], references: [userId], onDelete: Cascade)
-
-  @@map("tickets")
 }
