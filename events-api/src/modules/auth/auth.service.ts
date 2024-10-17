@@ -91,4 +91,11 @@ export class AuthService {
 
     return authToken;
   }
+
+  //Get all users
+
+  async getAllUsers() {
+    const users = await this.databaseService.user.findMany();
+    return users;
+  }
 }
