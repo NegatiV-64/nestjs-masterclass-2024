@@ -47,6 +47,16 @@ export class EventsService {
     return foundEvent;
   }
 
+  async getSortedEvents(sortBy, sortOrder) {
+    const orderBy = {
+      [sortBy]: sortOrder
+    };
+
+    return this.databaseService.event.findMany({
+      orderBy: orderBy,
+    })
+  }
+
   async listEvents(searchParams: ListEventsParamsReqDto) {
     const page = searchParams.page ?? 1;
     const limit = searchParams.limit ?? 20;
@@ -64,5 +74,37 @@ export class EventsService {
     });
 
     return events;
+  }
+  async updateEvent(eventId: string, updateEventDto: CreateEventReqDto) {
+    const foundEvent = await this.databaseService.event.findUnique({
+      where: {
+        eventId,
+      },
+    });
+
+    if (!foundEvent) {
+      throw new BadRequestException(`Event with id ${eventId} does not exist`);
+    }
+    return this.databaseService.event.update({
+      where: {
+        eventId
+      },
+      data: updateEventDto
+    })
+  }
+
+  async deleteEvent (eventId: string) {
+    const foundEvent = await this.databaseService.event.findUnique({
+      where: {
+        eventId,
+      },
+    });
+
+    if (!foundEvent) {
+      throw new BadRequestException(`Event with id ${eventId} does not exist`);
+    }
+    return this.databaseService.event.delete({
+      where: {eventId},
+    });
   }
 }
