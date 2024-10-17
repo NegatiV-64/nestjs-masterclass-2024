@@ -1,6 +1,7 @@
+import { PayTicketReqDto } from './dto/payment-ticket.dto';
 import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
 import { TicketsService } from './tickets.service';
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { CreateTicketReqDto } from './dto/create-ticket.dto';
 import { UserId } from '../../shared/decorators/get-user-id.decorator';
 import { ParsingUUIDPipe } from '../../shared/pipes/uuid-params.pipe';
@@ -15,6 +16,7 @@ export class TicketsController {
     const createdTicket = await this.ticketsService.createTicket(userId, dto)
 
     return {
+      message: "Ticket successfully created",
       data: createdTicket
     }
   }
@@ -25,6 +27,7 @@ export class TicketsController {
     const tickets = await this.ticketsService.getUserTickets(userId)
 
     return {
+      message: "Tickets successfully received",
       data: tickets
     }
   }
@@ -41,7 +44,36 @@ export class TicketsController {
     const foundTicket = await this.ticketsService.getUserTicketById(userId, ticketId)
 
     return {
+      message: "Ticket successfully received",
       data: foundTicket
+    }
+  }
+
+  @Put(':ticketId/pay')
+  @UseGuards(AuthTokenGuard)
+  async payTicket(
+    @Body() dto: PayTicketReqDto,
+    @UserId() userId:string,
+    @Param('ticketId', ParsingUUIDPipe)
+    ticketId: string,
+  ){
+    const payingTicketResult = await this.ticketsService.payTicket(userId, ticketId, dto)
+
+    return payingTicketResult
+  }
+
+  @Put(':ticketId/cancel')
+  @UseGuards(AuthTokenGuard)
+  async cancelTicket(
+    @UserId() userId:string,
+    @Param('ticketId', ParsingUUIDPipe)
+    ticketId: string,
+  ){
+    const cancelledTicket = await this.ticketsService.cancelTicket(userId, ticketId)
+
+    return {
+      message: "Ticket successfully cancelled",
+      data: cancelledTicket
     }
   }
 }

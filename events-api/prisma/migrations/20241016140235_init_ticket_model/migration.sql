@@ -6,7 +6,7 @@ CREATE TABLE "Ticket" (
     "ticket_status" TEXT NOT NULL DEFAULT 'pending',
     "ticket_created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "ticket_updated_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "ticket_transaction_id" TEXT NOT NULL,
+    "ticket_transaction_id" TEXT,
     "ticket_event_id" TEXT NOT NULL,
     "ticket_user_id" TEXT NOT NULL,
     CONSTRAINT "Ticket_ticket_event_id_fkey" FOREIGN KEY ("ticket_event_id") REFERENCES "Event" ("event_id") ON DELETE CASCADE ON UPDATE CASCADE,

@@ -19,6 +19,7 @@ export class EventsController {
     const createdEvent = await this.eventsService.createEvent(dto);
 
     return {
+      message: 'Event succesfully created',
       data: createdEvent,
     };
   }
@@ -28,6 +29,7 @@ export class EventsController {
     const events = await this.eventsService.listEvents(searchParams);
 
     return {
+      message: 'Events succesfully received',
       data: events,
     };
   }
@@ -40,6 +42,7 @@ export class EventsController {
     const foundEvent = await this.eventsService.getEventById(eventId);
 
     return {
+      message: 'Event succesfully received',
       data: foundEvent,
     };
   }
@@ -56,6 +59,7 @@ export class EventsController {
     const updatedEvent = await this.eventsService.updateEvent(eventId, dto);
 
     return {
+      message: 'Event succesfully updated',
       data: updatedEvent,
     };
   }
@@ -68,6 +72,7 @@ export class EventsController {
     const deletedEvent = await this.eventsService.deleteEventById(eventId);
 
     return {
+      message: 'Event succesfully deleted',
       data: deletedEvent,
     };
   }
