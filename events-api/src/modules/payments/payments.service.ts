@@ -42,6 +42,10 @@ export class PaymentsService {
       if (data.message === 'Payment successful') {
         return data.transactionId;
       }
+
+      if (data.message === 'Validation failed') {
+        throw new BadRequestException('Invalid payment details');
+      }
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         if (error.code === 'ECONNREFUSED') {

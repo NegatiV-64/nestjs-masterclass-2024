@@ -28,8 +28,8 @@ model Ticket {
   ticketTransactionId String?  @map("ticket_transaction_id")
   ticketEventId       String   @map("ticket_event_id")
   ticketUserId        String   @map("ticket_user_id")
-  event               Event    @relation(fields: [ticketEventId], references: [eventId])
-  user                User     @relation(fields: [ticketUserId], references: [userId])
+  event               Event    @relation(fields: [ticketEventId], references: [eventId], onDelete: Cascade)
+  user                User     @relation(fields: [ticketUserId], references: [userId], onDelete: Cascade)
 }
 
 model User {
