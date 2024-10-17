@@ -3,6 +3,7 @@ import { DatabaseService } from '../database/database.service';
 import { type CreateEventReqDto } from './dto/requests';
 import { time } from 'src/shared/libs/time.lib';
 import { ListEventsParamsReqDto } from './dto/requests/list-events-params.dto';
+import { UpdateEventDto } from './dto/requests/update-event.dto';
 
 @Injectable()
 export class EventsService {
@@ -50,8 +51,14 @@ export class EventsService {
   async listEvents(searchParams: ListEventsParamsReqDto) {
     const page = searchParams.page ?? 1;
     const limit = searchParams.limit ?? 20;
+    const sortBy = searchParams.sort_by ?? "eventDate";
+    const sortOrder = searchParams.sort_order ?? "asc";
 
     const events = await this.databaseService.event.findMany({
+      orderBy: {
+        [sortBy]: sortOrder
+      },
+
       where: {
         eventName: searchParams.name
           ? {
@@ -64,5 +71,26 @@ export class EventsService {
     });
 
     return events;
+  }
+
+  async updateEventById(eventId: string, updateData: UpdateEventDto) {
+    await this.getEventById(eventId);
+
+    return this.databaseService.event.update({
+      where: {
+        eventId,
+      },
+      data: updateData
+    })
+  }
+
+  async deleteEventById(eventId: string,) {
+    await this.getEventById(eventId);
+
+    return this.databaseService.event.delete({
+      where: {
+        eventId,
+      }
+    })
   }
 }
