@@ -1,5 +1,12 @@
 import { Transform } from "class-transformer";
-import { IsInt, IsOptional, IsPositive, IsString, Max } from "class-validator";
+import {
+    IsIn,
+    IsInt,
+    IsOptional,
+    IsPositive,
+    IsString,
+    Max
+} from "class-validator";
 
 export class ListEventsParamsReqDto {
     @Transform(
@@ -44,6 +51,16 @@ export class ListEventsParamsReqDto {
     @IsPositive()
     @Max(1000)
     limit?: number;
+
+    @IsOptional()
+    @IsString()
+    @IsIn(["eventName", "eventDate", "eventCreatedAt", "eventUpdatedAt"])
+    sort_by?: string;
+
+    @IsOptional()
+    @IsString()
+    @IsIn(["asc", "desc"])
+    sort_order?: "asc" | "desc";
 
     @IsOptional()
     @IsString()

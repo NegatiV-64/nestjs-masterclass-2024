@@ -56,6 +56,8 @@ export class EventsService {
     async listEvents(searchParams: ListEventsParamsReqDto) {
         const page = searchParams.page ?? 1;
         const limit = searchParams.limit ?? 20;
+        const sortBy = searchParams.sort_by ?? "eventDate";
+        const sortOrder = searchParams.sort_order ?? "asc";
 
         const events = await this.databaseService.event.findMany({
             where: {
@@ -64,6 +66,9 @@ export class EventsService {
                           contains: searchParams.name
                       }
                     : undefined
+            },
+            orderBy: {
+                [sortBy]: sortOrder
             },
             skip: (page - 1) * limit,
             take: limit
