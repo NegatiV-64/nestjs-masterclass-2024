@@ -1,6 +1,6 @@
-import { Body, Controller, Get, HttpStatus, Param, ParseUUIDPipe, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { EventsService } from './events.service';
-import { CreateEventReqDto } from './dto/requests';
+import { CreateEventReqDto, UpdateEventReqDto } from './dto/requests';
 import { ListEventsParamsReqDto } from './dto/requests/list-events-params.dto';
 import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
 import { Roles, RolesGuard } from 'src/shared/guards/roles.guard';
@@ -45,6 +45,28 @@ export class EventsController {
 
     return {
       data: foundEvent,
+    };
+  }
+
+  @Patch(':eventId')
+  @Roles(UserRole.Admin)
+  @UseGuards(AuthTokenGuard, RolesGuard)
+  public async updateEvent(
+    @Body() dto: UpdateEventReqDto,
+    @Param(
+      'eventId',
+      new ParseUUIDPipe({
+        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
+        version: '4',
+      }),
+    )
+    eventId: string,
+  ) {
+    console.log('hi');
+    const updatedEvent = await this.eventsService.updateEvent(eventId, dto);
+
+    return {
+      data: updatedEvent,
     };
   }
 }

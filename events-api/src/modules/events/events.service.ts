@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
-import { type CreateEventReqDto } from './dto/requests';
+import { UpdateEventReqDto, type CreateEventReqDto } from './dto/requests';
 import { time } from 'src/shared/libs/time.lib';
 import { ListEventsParamsReqDto } from './dto/requests/list-events-params.dto';
 
@@ -64,5 +64,14 @@ export class EventsService {
     });
 
     return events;
+  }
+
+  async updateEvent(eventId: string, dto: UpdateEventReqDto) {
+    const existingEvent = await this.getEventById(eventId);
+    console.log(existingEvent);
+
+    const updatedEvent = await this.databaseService.event.update({ where: { eventId: existingEvent.eventId }, data: { ...dto } });
+
+    return updatedEvent;
   }
 }
