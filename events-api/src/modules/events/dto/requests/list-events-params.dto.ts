@@ -1,5 +1,5 @@
 import { IsEnum, IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
-import { ParseInt } from 'src/shared/transformers/parse-int.transformer';
+import { ParseInt } from 'src/shared/transformers';
 import { SortBy } from 'src/shared/constants/sort-by.constant';
 import { SortOrder } from 'src/shared/constants/sort-order.constant';
 import { ApiProperty } from '@nestjs/swagger';

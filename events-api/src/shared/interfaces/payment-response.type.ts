@@ -6,7 +6,7 @@ type PaymentSuccessResponse = {
 type PaymentFailureResponse = {
   message: string;
   transactionId: string;
-  error: string;
+  error: {};
 };
 
 type IPaymentResponse = PaymentSuccessResponse | PaymentFailureResponse;

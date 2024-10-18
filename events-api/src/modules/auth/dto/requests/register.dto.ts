@@ -3,7 +3,7 @@ import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
 import { MatchField } from 'src/shared/validators/match-field.validator';
 
 export class RegisterDto {
-  @ApiProperty({ example: 'gordon@freeman.com' })
+  @ApiProperty({ format: 'email' })
   @IsEmail()
   email: string;
 

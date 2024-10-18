@@ -9,7 +9,11 @@ export class EventsService {
   constructor(private readonly databaseService: DatabaseService) {}
 
   async createEvent(dto: CreateEventReqDto) {
-    await this.verifyNameUniqueness(dto.eventName);
+    const eventNameExists = await this.checkIfEventNameExists(dto.eventName);
+
+    if (eventNameExists) {
+      throw new BadRequestException('Event with this name already exists');
+    }
 
     const createdEvent = await this.databaseService.event.create({
       data: {
@@ -60,10 +64,16 @@ export class EventsService {
   }
 
   async updateEvent(eventId: string, dto: UpdateEventReqDto) {
-    await this.verifyEventExistence(eventId);
+    const eventExists = await this.checkIfEventExists(eventId);
 
-    if (dto.eventName) {
-      await this.verifyNameUniqueness(dto.eventName);
+    if (!eventExists) {
+      throw new BadRequestException('Event does not exist');
+    }
+
+    const eventNameExists = dto.eventName ? await this.checkIfEventNameExists(dto.eventName) : false;
+
+    if (eventNameExists) {
+      throw new BadRequestException('Event with this name already exists');
     }
 
     const updatedEvent = await this.databaseService.event.update({
@@ -82,7 +92,11 @@ export class EventsService {
   }
 
   async deleteEvent(eventId: string) {
-    await this.verifyEventExistence(eventId);
+    const eventExists = await this.checkIfEventExists(eventId);
+
+    if (!eventExists) {
+      throw new BadRequestException(`Event with id ${eventId} does not exist`);
+    }
 
     const deletedEvent = await this.databaseService.event.delete({
       where: {
@@ -93,8 +107,8 @@ export class EventsService {
     return deletedEvent;
   }
 
-  async verifyEventExistence(eventId: string) {
-    const existingEvent = await this.databaseService.event.findUnique({
+  async checkIfEventExists(eventId: string) {
+    const event = await this.databaseService.event.findUnique({
       where: {
         eventId,
       },
@@ -103,12 +117,14 @@ export class EventsService {
       },
     });
 
-    if (!existingEvent) {
-      throw new BadRequestException(`Event with id ${eventId} does not exist`);
+    if (!event) {
+      return false;
     }
+
+    return true;
   }
 
-  async verifyNameUniqueness(eventName: string) {
+  private async checkIfEventNameExists(eventName: string) {
     const existingEventByName = await this.databaseService.event.findFirst({
       where: {
         eventName,
@@ -118,8 +134,10 @@ export class EventsService {
       },
     });
 
-    if (existingEventByName) {
-      throw new BadRequestException('Event with this name already exists');
+    if (!existingEventByName) {
+      return false;
     }
+
+    return true;
   }
 }

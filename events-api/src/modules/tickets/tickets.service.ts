@@ -16,7 +16,11 @@ export class TicketsService {
   ) {}
 
   async createTicket(ticketUserId: string, dto: CreateTicketReqDto) {
-    await this.eventsService.verifyEventExistence(dto.ticketEventId);
+    const eventExists = await this.eventsService.checkIfEventExists(dto.ticketEventId);
+
+    if (!eventExists) {
+      throw new BadRequestException('Event does not exist');
+    }
 
     const createdTicket = await this.databaseService.ticket.create({
       data: {
@@ -49,14 +53,18 @@ export class TicketsService {
     });
 
     if (!foundTicket) {
-      throw new NotFoundException(`Ticket with id ${ticketId} who belongs to user with id ${ticketUserId} not found`);
+      throw new NotFoundException(`Ticket with id ${ticketId} not found`);
     }
 
     return foundTicket;
   }
 
   async payForTicket(ticketUserId: string, ticketId: string, dto: TicketPaymentReqDto) {
-    await this.verifyTicketExistenceAndOwnership(ticketUserId, ticketId);
+    const ticketExists = await this.checkIfTicketExists(ticketUserId, ticketId);
+
+    if (!ticketExists) {
+      throw new BadRequestException('Ticket does not exist');
+    }
 
     const transactionId = await this.paymentsService.processPayment(dto);
 
@@ -75,7 +83,11 @@ export class TicketsService {
   }
 
   async cancelTicket(ticketUserId: string, ticketId: string) {
-    await this.verifyTicketExistenceAndOwnership(ticketUserId, ticketId);
+    const ticketExists = await this.checkIfTicketExists(ticketUserId, ticketId);
+
+    if (!ticketExists) {
+      throw new BadRequestException('Ticket does not exist');
+    }
 
     const cancelledTicket = await this.databaseService.ticket.update({
       where: {
@@ -91,7 +103,7 @@ export class TicketsService {
     return cancelledTicket;
   }
 
-  private async verifyTicketExistenceAndOwnership(ticketUserId: string, ticketId: string) {
+  private async checkIfTicketExists(ticketUserId: string, ticketId: string) {
     const existingTicket = await this.databaseService.ticket.findUnique({
       where: {
         ticketUserId: ticketUserId,
@@ -103,7 +115,9 @@ export class TicketsService {
     });
 
     if (!existingTicket) {
-      throw new BadRequestException(`Ticket with id ${ticketId} who belongs to user with id ${ticketUserId} does not exist`);
+      return false;
     }
+
+    return true;
   }
 }

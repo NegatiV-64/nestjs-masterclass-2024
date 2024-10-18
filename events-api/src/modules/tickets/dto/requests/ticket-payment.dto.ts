@@ -1,13 +1,12 @@
-import { IsInt, IsNumber, IsPositive, IsString, Length } from 'class-validator';
+import { IsNumber, IsPositive, IsString, Length, Matches } from 'class-validator';
 import { TimeFormat } from 'src/shared/constants/time.constant';
-import { ParseFloat, ParseInt } from 'src/shared/transformers';
+import { ParseFloat } from 'src/shared/transformers';
 import { IsDateFormatValid } from 'src/shared/validators/date-format.validator';
 
 export class TicketPaymentReqDto {
-  @ParseInt()
-  @IsInt()
-  @IsPositive()
-  last4Digits: number;
+  @Matches(/^\d+$/, { message: 'last4Digits must contain only digits' })
+  @Length(4, 4)
+  last4Digits: string;
 
   @IsString()
   @IsDateFormatValid(TimeFormat.MonthYear)

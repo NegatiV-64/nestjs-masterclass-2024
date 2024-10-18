@@ -20,10 +20,6 @@ export function IsDateFormatValid(format: ObjectValues<typeof TimeFormat>, valid
             return false;
           }
 
-          if (format === TimeFormat.MonthYear) {
-            return dayjs(value, format, true).isValid();
-          }
-
           const isValidDate = time(value, format, true).isValid();
 
           return isValidDate;
