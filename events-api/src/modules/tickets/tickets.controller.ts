@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { TicketsService } from './tickets.service';
 import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
 import { CreateTicketReqDto } from './dto/requests/create-ticket.dto';
+import { PaymentDto } from './dto/requests';
 
 @Controller('tickets')
 export class TicketsController {
@@ -24,10 +25,17 @@ export class TicketsController {
         return {data: tickets}
     }
 
-    @Get()
+    @Get(':ticketId')
     @UseGuards(AuthTokenGuard)
-    async getTicketById(@Request() req, @Param() id) {
+    async getTicketById(@Request() req, @Param("ticketId") id) {
         const ticket = await this.ticketsService.getTicketById(req.user.userId, id)
         return {data: ticket}
+    }
+
+    @Put(':ticketId/pay')
+    @UseGuards(AuthTokenGuard)
+    async payForTicket(@Param("ticketId") ticketId: string, @Request() req, @Body() dto: PaymentDto) {
+        const paidTicket = await this.ticketsService.payForTicket(ticketId, dto, req.user.userId)
+        return {data: paidTicket}
     }
 }
