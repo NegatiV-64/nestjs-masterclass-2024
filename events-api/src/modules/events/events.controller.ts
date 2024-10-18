@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     HttpStatus,
     Param,
@@ -78,6 +79,26 @@ export class EventsController {
 
         return {
             data: updatedEvent
+        };
+    }
+
+    @Delete(":eventId")
+    @Roles(UserRole.Admin)
+    @UseGuards(AuthTokenGuard, RolesGuard)
+    public async deleteEvent(
+        @Param(
+            "eventId",
+            new ParseUUIDPipe({
+                errorHttpStatusCode: HttpStatus.BAD_REQUEST,
+                version: "4"
+            })
+        )
+        eventId: string
+    ) {
+        const deletedEvent = await this.eventsService.deleteEvent(eventId);
+
+        return {
+            data: deletedEvent
         };
     }
 }

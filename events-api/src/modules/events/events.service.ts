@@ -74,7 +74,6 @@ export class EventsService {
 
     async updateEvent(eventId: string, dto: UpdateEventReqDto) {
         const existingEvent = await this.getEventById(eventId);
-        console.log(existingEvent);
 
         const updatedEvent = await this.databaseService.event.update({
             where: { eventId: existingEvent.eventId },
@@ -82,5 +81,15 @@ export class EventsService {
         });
 
         return updatedEvent;
+    }
+
+    async deleteEvent(eventId: string) {
+        const existingEvent = await this.getEventById(eventId);
+
+        const deletedEvent = await this.databaseService.event.delete({
+            where: { eventId: existingEvent.eventId }
+        });
+
+        return deletedEvent;
     }
 }
