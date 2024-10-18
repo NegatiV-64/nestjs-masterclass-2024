@@ -72,7 +72,6 @@ export class TicketsService {
 
         const paymentResult = await this.paymentService.processTransaction(dto);
 
-        console.log(paymentResult);
         const updatedTicket = await this.databaseService.ticket.update({
             where: {
                 ticketId: ticketId,

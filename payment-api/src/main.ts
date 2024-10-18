@@ -54,8 +54,6 @@ app.post(
         const requestBody = context.req.valid("json");
         const { last4 } = requestBody;
 
-        console.log(context);
-
         if (last4 === "4242") {
             return context.json(
                 {
