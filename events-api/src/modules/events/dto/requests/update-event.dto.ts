@@ -7,22 +7,22 @@ export class UpdateEventReqDto {
   @IsString()
   @MinLength(3)
   @MaxLength(255)
-  eventName: string;
+  eventName?: string;
 
   @IsOptional()
   @IsString()
   @MinLength(3)
   @MaxLength(255)
-  eventDescription: string;
+  eventDescription?: string;
 
   @IsOptional()
   @IsString()
   @MinLength(3)
   @MaxLength(255)
-  eventLocation: string;
+  eventLocation?: string;
 
   @IsOptional()
   @IsString()
   @IsDateFormatValid(TimeFormat.CalendarWithTime)
-  eventDate: string;
+  eventDate?: string;
 }
