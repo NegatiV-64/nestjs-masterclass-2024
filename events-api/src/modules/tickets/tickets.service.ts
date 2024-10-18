@@ -31,4 +31,14 @@ export class TicketsService {
 
         return createdTicket;
     }
+
+    async getTickets(userId: string) {
+        const userTickets = await this.databaseService.ticket.findMany({
+            where: {
+                ticketUserId: userId
+            }
+        });
+
+        return userTickets;
+    }
 }

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards } from "@nestjs/common";
+import { Controller, Post, Body, UseGuards, Get } from "@nestjs/common";
 import { TicketsService } from "./tickets.service";
 import { CreateTicketReqDto } from "./dto/requests";
 import { AuthTokenGuard } from "src/shared/guards/auth-token.guard";
@@ -11,7 +11,7 @@ export class TicketsController {
 
     @Post()
     @UseGuards(AuthTokenGuard)
-    async create(
+    async createTicket(
         @Body() createTicketDto: CreateTicketReqDto,
         @User() user: UserEntity
     ) {
@@ -22,6 +22,16 @@ export class TicketsController {
 
         return {
             data: createdTicket
+        };
+    }
+
+    @Get()
+    @UseGuards(AuthTokenGuard)
+    async getTickets(@User() user: UserEntity) {
+        const userTickets = await this.ticketsService.getTickets(user.userId);
+
+        return {
+            data: userTickets
         };
     }
 }
