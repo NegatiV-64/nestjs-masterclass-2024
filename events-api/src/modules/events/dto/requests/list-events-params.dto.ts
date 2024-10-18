@@ -1,5 +1,7 @@
+import { SortOrder } from './../../../../shared/constants/sort-order.constant';
 import { Transform } from 'class-transformer';
-import { IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
+import { SortBy } from 'src/shared/constants/sort-by.constant';
 
 export class ListEventsParamsReqDto {
   @Transform(
@@ -48,4 +50,12 @@ export class ListEventsParamsReqDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @IsString()
+  @IsEnum(SortBy)
+  sort_by: string
+
+  @IsString()
+  @IsEnum(SortOrder)
+  sort_order: string
 }
