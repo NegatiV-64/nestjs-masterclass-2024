@@ -74,7 +74,6 @@ export class EventsController {
         )
         eventId: string
     ) {
-        console.log("hi");
         const updatedEvent = await this.eventsService.updateEvent(eventId, dto);
 
         return {

@@ -6,10 +6,11 @@ import {
     Get,
     Param,
     ParseUUIDPipe,
-    HttpStatus
+    HttpStatus,
+    Put
 } from "@nestjs/common";
 import { TicketsService } from "./tickets.service";
-import { CreateTicketReqDto } from "./dto/requests";
+import { CreateTicketReqDto, TicketPaymentReqDto } from "./dto/requests";
 import { AuthTokenGuard } from "src/shared/guards/auth-token.guard";
 import { User } from "src/shared/decorators";
 import { User as UserEntity } from "@prisma/client";
@@ -64,6 +65,54 @@ export class TicketsController {
 
         return {
             data: foundTicket
+        };
+    }
+
+    @Put(":ticketId/pay")
+    @UseGuards(AuthTokenGuard)
+    async payForTicket(
+        @Param(
+            "ticketId",
+            new ParseUUIDPipe({
+                errorHttpStatusCode: HttpStatus.BAD_REQUEST,
+                version: "4"
+            })
+        )
+        ticketId: string,
+        @User() user: UserEntity,
+        @Body() dto: TicketPaymentReqDto
+    ) {
+        const updatedTicket = await this.ticketsService.payForTicket(
+            ticketId,
+            user.userId,
+            dto
+        );
+
+        return {
+            data: updatedTicket
+        };
+    }
+
+    @Put(":ticketId/cancel")
+    @UseGuards(AuthTokenGuard)
+    async cancelPayment(
+        @Param(
+            "ticketId",
+            new ParseUUIDPipe({
+                errorHttpStatusCode: HttpStatus.BAD_REQUEST,
+                version: "4"
+            })
+        )
+        ticketId: string,
+        @User() user: UserEntity
+    ) {
+        const updatedTicket = await this.ticketsService.cancelPayment(
+            ticketId,
+            user.userId
+        );
+
+        return {
+            data: updatedTicket
         };
     }
 }

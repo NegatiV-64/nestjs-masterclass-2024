@@ -6,6 +6,7 @@ import { EventsModule } from "./modules/events/events.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { LoggerMiddleware } from "./shared/middleware";
 import { TicketsModule } from "./modules/tickets/tickets.module";
+import { TicketPaymentModule } from "./modules/ticket-payment/ticket-payment.module";
 
 @Module({
     imports: [
@@ -17,7 +18,8 @@ import { TicketsModule } from "./modules/tickets/tickets.module";
         DatabaseModule,
         AuthModule,
         EventsModule,
-        TicketsModule
+        TicketsModule,
+        TicketPaymentModule
     ]
 })
 export class AppModule {

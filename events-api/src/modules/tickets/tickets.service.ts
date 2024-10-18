@@ -1,13 +1,15 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { CreateTicketReqDto } from "./dto/requests";
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { CreateTicketReqDto, TicketPaymentReqDto } from "./dto/requests";
 import { DatabaseService } from "../database/database.service";
 import { EventsService } from "../events/events.service";
+import { TicketPaymentService } from "../ticket-payment/ticket-payment.service";
 
 @Injectable()
 export class TicketsService {
     constructor(
         private readonly databaseService: DatabaseService,
-        private readonly eventsService: EventsService
+        private readonly eventsService: EventsService,
+        private readonly paymentService: TicketPaymentService
     ) {}
 
     async createTicket(dto: CreateTicketReqDto, ticketUserId: string) {
@@ -51,9 +53,55 @@ export class TicketsService {
         });
 
         if (!foundTicket) {
-            throw new NotFoundException(`Ticket with id ${ticketId} not found`);
+            throw new BadRequestException(`Invalid ticket or user Id`);
         }
 
         return foundTicket;
+    }
+
+    async payForTicket(
+        ticketId: string,
+        userId: string,
+        dto: TicketPaymentReqDto
+    ) {
+        const existingValidTicket = await this.getTicketById(ticketId, userId);
+
+        if (existingValidTicket.ticketStatus == "paid") {
+            return existingValidTicket;
+        }
+
+        const paymentResult = await this.paymentService.processTransaction(dto);
+
+        console.log(paymentResult);
+        const updatedTicket = await this.databaseService.ticket.update({
+            where: {
+                ticketId: ticketId,
+                ticketUserId: userId
+            },
+            data: {
+                ticketStatus: "paid",
+                ticketTransactionId: paymentResult.transactionId
+            }
+        });
+
+        return updatedTicket;
+    }
+
+    async cancelPayment(ticketId: string, userId: string) {
+        const existingValidTicket = await this.getTicketById(ticketId, userId);
+
+        if (existingValidTicket.ticketStatus == "canceled") {
+            return existingValidTicket;
+        }
+
+        const updatedTicket = await this.databaseService.ticket.update({
+            where: {
+                ticketId: ticketId,
+                ticketUserId: userId
+            },
+            data: { ticketStatus: "canceled" }
+        });
+
+        return updatedTicket;
     }
 }
