@@ -53,9 +53,11 @@ export class ListEventsParamsReqDto {
 
   @IsString()
   @IsEnum(SortBy)
-  sort_by: string
+  @IsOptional()
+  sort_by?: string
 
   @IsString()
   @IsEnum(SortOrder)
-  sort_order: string
+  @IsOptional()
+  sort_order?: string
 }
