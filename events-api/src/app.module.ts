@@ -5,6 +5,7 @@ import { DatabaseModule } from "./modules/database/database.module";
 import { EventsModule } from "./modules/events/events.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { LoggerMiddleware } from "./shared/middleware";
+import { TicketsModule } from "./modules/tickets/tickets.module";
 
 @Module({
     imports: [
@@ -15,7 +16,8 @@ import { LoggerMiddleware } from "./shared/middleware";
         }),
         DatabaseModule,
         AuthModule,
-        EventsModule
+        EventsModule,
+        TicketsModule
     ]
 })
 export class AppModule {
