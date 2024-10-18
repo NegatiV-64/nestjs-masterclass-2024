@@ -25,10 +25,8 @@ export class EventsService {
 
     const createdEvent = await this.databaseService.event.create({
       data: {
+        ...dto,
         eventDate: time(dto.eventDate).toDate(),
-        eventDescription: dto.eventDescription,
-        eventLocation: dto.eventLocation,
-        eventName: dto.eventName,
       },
     });
 
@@ -55,8 +53,8 @@ export class EventsService {
     const sortBy = searchParams.sort_by ?? SortBy.EventCreatedAt;
     const sortOrder = searchParams.sort_order ?? SortOrder.Asc;
     const orderBy = {
-      [sortBy]: sortOrder
-    }
+      [sortBy]: sortOrder,
+    };
     const events = await this.databaseService.event.findMany({
       where: {
         eventName: searchParams.name
@@ -67,7 +65,7 @@ export class EventsService {
       },
       skip: (page - 1) * limit,
       take: limit,
-      orderBy: orderBy
+      orderBy: orderBy,
     });
 
     return events;
@@ -84,13 +82,13 @@ export class EventsService {
     }
     return this.databaseService.event.update({
       where: {
-        eventId
+        eventId,
       },
-      data: updateEventDto
-    })
+      data: { ...updateEventDto, eventDate: time(updateEventDto.eventDate).toDate() },
+    });
   }
 
-  async deleteEvent (eventId: string) {
+  async deleteEvent(eventId: string) {
     const foundEvent = await this.databaseService.event.findUnique({
       where: {
         eventId,
@@ -101,7 +99,7 @@ export class EventsService {
       throw new BadRequestException(`Event with id ${eventId} does not exist`);
     }
     return this.databaseService.event.delete({
-      where: {eventId},
+      where: { eventId },
     });
   }
 }
