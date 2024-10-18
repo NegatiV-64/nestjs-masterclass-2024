@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateTicketReqDto } from "./dto/requests";
 import { DatabaseService } from "../database/database.service";
 import { EventsService } from "../events/events.service";
@@ -40,5 +40,20 @@ export class TicketsService {
         });
 
         return userTickets;
+    }
+
+    async getTicketById(ticketId: string, userId: string) {
+        const foundTicket = await this.databaseService.ticket.findUnique({
+            where: {
+                ticketId: ticketId,
+                ticketUserId: userId
+            }
+        });
+
+        if (!foundTicket) {
+            throw new NotFoundException(`Ticket with id ${ticketId} not found`);
+        }
+
+        return foundTicket;
     }
 }
