@@ -1,5 +1,17 @@
 import { Transform } from 'class-transformer';
-import { IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
+
+enum SortByOptions {
+  eventName,
+  eventDate,
+  eventCreatedAt,
+  eventUpdatedAt,
+}
+
+enum SortOrderOptions {
+  asc,
+  desc,
+}
 
 export class ListEventsParamsReqDto {
   @Transform(
@@ -48,4 +60,12 @@ export class ListEventsParamsReqDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @IsOptional()
+  @IsEnum(SortByOptions)
+  sort_by?: SortByOptions;
+
+  @IsOptional()
+  @IsEnum(SortOrderOptions)
+  sort_order?: SortOrderOptions;
 }

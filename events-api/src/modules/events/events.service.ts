@@ -50,6 +50,8 @@ export class EventsService {
   async listEvents(searchParams: ListEventsParamsReqDto) {
     const page = searchParams.page ?? 1;
     const limit = searchParams.limit ?? 20;
+    const sortBy = searchParams.sort_by ?? 'eventCreatedAt';
+    const sortOrder = searchParams.sort_order ?? 'desc';
 
     const events = await this.databaseService.event.findMany({
       where: {
@@ -61,8 +63,24 @@ export class EventsService {
       },
       skip: (page - 1) * limit,
       take: limit,
+      orderBy: [
+        {
+          [sortBy]: sortOrder,
+        },
+      ],
     });
 
     return events;
+  }
+
+  async updateEventById(eventId: string, updateEventDto: Partial<CreateEventReqDto>) {
+    return await this.databaseService.event.update({
+      where: { eventId: eventId },
+      data: updateEventDto,
+    });
+  }
+
+  async deleteEventById(eventId: string) {
+    return await this.databaseService.event.delete({ where: { eventId } });
   }
 }
