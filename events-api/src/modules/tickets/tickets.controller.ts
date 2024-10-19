@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Query, Request, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Query, UseGuards, UsePipes } from '@nestjs/common';
 import { UUID4PipeOptions } from 'src/shared/constants/uuid4-pipe-options.constant';
 import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
 import { TicketsService } from './tickets.service';
@@ -6,7 +6,8 @@ import { CreateTicketReqDto } from './dto/requests/create-ticket.dto';
 import { ListTicketsParamsReqDto } from './dto/requests/list-tickets-params.dto';
 import { PayTicketReqDto } from './dto/requests/pay-ticket.dto';
 import { SnakeToCamelCasePipe } from 'src/shared/pipes/snake-to-camel-case.pipe';
-import { AuthRequest } from 'src/shared/types/auth-request.type';
+import { AuthUserPayload } from 'src/shared/types/auth-user-payload.type';
+import { User } from 'src/shared/decorators/user.decorator';
 
 @Controller('tickets')
 export class TicketsController {
@@ -14,8 +15,8 @@ export class TicketsController {
 
   @Post()
   @UseGuards(AuthTokenGuard)
-  async createTicket(@Body() dto: CreateTicketReqDto, @Request() req: AuthRequest) {
-    const createdTicket = await this.ticketsService.createTicket({ ...dto, ticketUserId: req.user.userId });
+  async createTicket(@Body() dto: CreateTicketReqDto, @User('userId') userId: AuthUserPayload['userId']) {
+    const createdTicket = await this.ticketsService.createTicket({ ...dto, ticketUserId: userId });
 
     return {
       data: createdTicket,
@@ -25,8 +26,8 @@ export class TicketsController {
   @Get()
   @UseGuards(AuthTokenGuard)
   @UsePipes(new SnakeToCamelCasePipe())
-  async listTickets(@Query() searchParams: ListTicketsParamsReqDto, @Request() req: AuthRequest) {
-    const tickets = await this.ticketsService.listTickets(searchParams, req.user.userId);
+  async listTickets(@Query() searchParams: ListTicketsParamsReqDto, @User('userId') userId: AuthUserPayload['userId']) {
+    const tickets = await this.ticketsService.listTickets(searchParams, userId);
 
     return {
       data: tickets,
@@ -38,9 +39,9 @@ export class TicketsController {
   async getTicketById(
     @Param('ticketId', new ParseUUIDPipe(UUID4PipeOptions))
     ticketId: string,
-    @Request() req: AuthRequest,
+    @User('userId') userId: AuthUserPayload['userId'],
   ) {
-    const foundTicket = await this.ticketsService.getTicketById(ticketId, req.user.userId);
+    const foundTicket = await this.ticketsService.getTicketById(ticketId, userId);
 
     return {
       data: foundTicket,
@@ -51,10 +52,10 @@ export class TicketsController {
   @UseGuards(AuthTokenGuard)
   async payTicket(
     @Param('ticketId', new ParseUUIDPipe(UUID4PipeOptions)) ticketId: string,
-    @Request() req: AuthRequest,
+    @User('userId') userId: AuthUserPayload['userId'],
     @Body() dto: PayTicketReqDto,
   ) {
-    const paidTicket = await this.ticketsService.payForTicket(dto, ticketId, req.user.userId);
+    const paidTicket = await this.ticketsService.payForTicket(dto, ticketId, userId);
 
     return {
       data: paidTicket,
@@ -63,8 +64,8 @@ export class TicketsController {
 
   @Put(':ticketId/cancel')
   @UseGuards(AuthTokenGuard)
-  async cancelTicket(@Param('ticketId', new ParseUUIDPipe(UUID4PipeOptions)) ticketId: string, @Request() req: AuthRequest) {
-    const canceledTicket = await this.ticketsService.cancelTicket(ticketId, req.user.userId);
+  async cancelTicket(@Param('ticketId', new ParseUUIDPipe(UUID4PipeOptions)) ticketId: string, @User('userId') userId: AuthUserPayload['userId']) {
+    const canceledTicket = await this.ticketsService.cancelTicket(ticketId, userId);
 
     return {
       data: canceledTicket,

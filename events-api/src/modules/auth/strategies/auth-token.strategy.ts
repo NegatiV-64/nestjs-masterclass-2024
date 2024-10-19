@@ -5,6 +5,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthTokenPayload } from '../types/auth-payload.type';
 import { AuthConfig } from 'src/shared/configs/auth.config';
 import { EnvConfig } from 'src/shared/configs/env.config';
+import { AuthUserPayload } from 'src/shared/types/auth-user-payload.type';
 
 @Injectable()
 export class AuthTokenStrategy extends PassportStrategy(Strategy, AuthConfig.AuthTokenKey) {
@@ -15,7 +16,7 @@ export class AuthTokenStrategy extends PassportStrategy(Strategy, AuthConfig.Aut
     });
   }
 
-  public async validate({ sub, userEmail, userRole }: AuthTokenPayload) {
+  public async validate({ sub, userEmail, userRole }: AuthTokenPayload): Promise<AuthUserPayload> {
     /**
      * Here you can perform additional checks to validate the user
      * For example, you can check if the user exists in the database
