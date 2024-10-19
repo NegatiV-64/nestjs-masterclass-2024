@@ -1,6 +1,6 @@
 import { Expose, Transform } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional, IsPositive, Max } from 'class-validator';
-import { TicketsSortBy, TicketsSortOrder } from 'src/modules/tickets/types/tickets-sort-params.type';
+import { TicketsSortBy, TicketsSortOrder } from 'src/modules/tickets/constants/tickets-sort-params.constant';
 
 export class ListTicketsParamsReqDto {
   @Transform(({ value }) => (typeof value !== 'string' ? undefined : parseInt(value, 10)), { toClassOnly: true })

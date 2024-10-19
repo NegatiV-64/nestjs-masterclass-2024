@@ -1,6 +1,6 @@
 import { Expose, Transform } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
-import { EventsSortBy, EventsSortOrder } from 'src/modules/events/types/events-sort-params.type';
+import { EventsSortBy, EventsSortOrder } from 'src/modules/events/constants/events-sort-params.constant';
 
 export class ListEventsParamsReqDto {
   @Transform(
