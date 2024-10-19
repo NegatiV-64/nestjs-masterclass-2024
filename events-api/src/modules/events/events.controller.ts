@@ -3,8 +3,8 @@ import { EventsService } from './events.service';
 import { CreateEventReqDto } from './dto/requests';
 import { ListEventsParamsReqDto } from './dto/requests/list-events-params.dto';
 import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
-import { Roles, RolesGuard } from 'src/shared/guards/roles.guard';
 import { UserRole } from 'src/shared/constants/user-role.constant';
+import { Roles, RolesGuard } from 'src/shared/guards/roles.guard';
 
 @Controller('events')
 export class EventsController {

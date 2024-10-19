@@ -34,12 +34,12 @@ model Ticket {
   ticketId            String   @id @default(uuid()) @map("ticket_id")
   ticketQuantity      Int
   ticketPrice         Int
-  ticketStatus        String // we can use enum in sqlite
+  ticketStatus        String
   ticketCreatedAt     DateTime @default(now()) @map("ticket_created_at")
   ticketUpdatedAt     DateTime @default(now()) @updatedAt @map("ticket_updated_at")
-  ticketTransactionId String
-  ticketEvent         Event    @relation(fields: [ticketEventId], references: [eventId])
+  ticketTransactionId String?
   ticketEventId       String
-  ticketUser          User     @relation(fields: [ticketUserId], references: [userId])
   ticketUserId        String
+  ticketUser          User     @relation(fields: [ticketUserId], references: [userId])
+  ticketEvent         Event    @relation(fields: [ticketEventId], references: [eventId])
 }
