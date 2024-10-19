@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
-export class SuccessResDto {
+export class SuccessPaymentResDto {
   @IsString()
   @IsNotEmpty()
   message: string;

@@ -3,8 +3,8 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PaymentDetailsDto } from './dto/response/payment-details.dto';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
-import { SuccessResDto } from './dto/response/success-response.dto';
-import { ErrorResDto } from './dto/response/error-response.dto';
+import { SuccessPaymentResDto } from './dto/response/success-response.dto';
+import { ErrorPaymentResDto } from './dto/response/error-response.dto';
 
 @Injectable()
 export class PaymentService {
@@ -28,7 +28,7 @@ export class PaymentService {
 
   async pay(paymentDetails: PaymentDetailsDto) {
     const { data } = await firstValueFrom(
-      this.httpService.post<SuccessResDto | ErrorResDto>(`${this.paymentApiUrl}/payment`, paymentDetails, {
+      this.httpService.post<SuccessPaymentResDto | ErrorPaymentResDto>(`${this.paymentApiUrl}/payment`, paymentDetails, {
         headers: {
           Authorization: `Bearer ${this.paymentApiAccessToken}`,
         },
