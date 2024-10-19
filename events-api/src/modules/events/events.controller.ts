@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, ParseUUIDPipe, Post, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventReqDto } from './dto/requests';
 import { ListEventsParamsReqDto } from './dto/requests/list-events-params.dto';
@@ -45,6 +45,31 @@ export class EventsController {
 
     return {
       data: foundEvent,
+    };
+  }
+
+  @Patch(':eventId')
+  @Roles(UserRole.Admin)
+  async updateEventById(
+    @Param(
+      'eventId',
+      new ParseUUIDPipe({
+        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
+        version: '4',
+      }),
+    )
+    eventId: string,
+    @Body() updateEventDto: Partial<CreateEventReqDto>,
+  ) {
+    const foundEvent = await this.eventsService.getEventById(eventId);
+
+    if (!foundEvent) {
+      throw new BadRequestException('Event not found');
+    }
+
+    const updatedEvent = await this.eventsService.updateEventById(eventId, updateEventDto);
+    return {
+      data: updatedEvent,
     };
   }
 }

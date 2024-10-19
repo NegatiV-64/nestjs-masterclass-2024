@@ -65,4 +65,11 @@ export class EventsService {
 
     return events;
   }
+
+  async updateEventById(eventId: string, updateEventDto: Partial<CreateEventReqDto>) {
+    return await this.databaseService.event.update({
+      where: { eventId: eventId },
+      data: updateEventDto,
+    });
+  }
 }
