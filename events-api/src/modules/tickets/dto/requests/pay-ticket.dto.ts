@@ -1,14 +1,12 @@
-import { Transform } from 'class-transformer';
-import { IsInt, IsPositive, IsString, Length, Max, Min } from 'class-validator';
+import { IsInt, IsPositive, IsString, Length } from 'class-validator';
 import { TimeFormat } from 'src/shared/constants/time.constant';
 import { IsDateFormatValid } from 'src/shared/validators/date-format.validator';
+import { IsDigitsValid } from 'src/shared/validators/digits.validator';
 
 export class PayTicketReqDto {
-  @Transform(({ value }) => (typeof value !== 'string' ? undefined : parseInt(value, 10)), { toClassOnly: true })
-  @IsInt()
-  @Min(1000)
-  @Max(9999)
-  last4Digits: number;
+  @IsString()
+  @IsDigitsValid(4)
+  last4Digits: string;
 
   @IsString()
   @IsDateFormatValid(TimeFormat.CreditCardExpiration)

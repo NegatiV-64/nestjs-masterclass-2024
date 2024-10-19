@@ -18,7 +18,7 @@ export class TicketPaymentsService {
 
   async processPayment(dto: PayTicketReqDto) {
     const transformedDto = {
-      last4: dto.last4Digits.toString(),
+      last4: dto.last4Digits,
       expiration: dto.cardExpiry,
       cardholder: dto.cardHolderName,
       amount: dto.paymentAmount,
