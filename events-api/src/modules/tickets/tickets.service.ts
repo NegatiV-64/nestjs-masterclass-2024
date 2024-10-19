@@ -28,4 +28,10 @@ export class TicketsService {
 
     return createdTicket;
   }
+
+  async getMyTickets(userId: string) {
+    return await this.databaseService.ticket.findMany({
+      where: { ticketUserId: userId },
+    });
+  }
 }
