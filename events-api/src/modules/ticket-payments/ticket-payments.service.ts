@@ -1,17 +1,16 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PayTicketReqDto } from '../tickets/dto/requests/pay-ticket.dto';
 import { HttpService } from '@nestjs/axios';
-import { catchError, firstValueFrom } from 'rxjs';
-import { AxiosError } from 'axios';
 import { plainToClass } from 'class-transformer';
-import { TicketPaymentResponseDto } from './dto/responses/ticket-payment-response.dto';
+import { TicketPaymentResponseDataDto } from './dto/responses/ticket-payment-response.dto';
 import { validate } from 'class-validator';
+import { axiosRequest } from 'src/shared/utils/axios.request';
 
 @Injectable()
 export class TicketPaymentsService {
   constructor(private readonly httpService: HttpService) {}
 
-  async processPayment(dto: PayTicketReqDto) {
+  async processPayment(dto: PayTicketReqDto): Promise<TicketPaymentResponseDataDto> {
     const transformedDto = {
       last4: dto.last4Digits,
       expiration: dto.cardExpiry,
@@ -20,17 +19,19 @@ export class TicketPaymentsService {
       paymentToken: dto.paymentToken,
     };
 
-    const paymentResponse = await firstValueFrom(
-      this.httpService.post('/payment', transformedDto).pipe(
-        catchError((error: AxiosError) => {
-          Logger.error(error);
-          throw new BadRequestException('Payment failed. ' + error.message);
-        }),
-      ),
-    );
+    const paymentResponse = await axiosRequest<TicketPaymentResponseDataDto>(this.httpService.axiosRef, {
+      url: '/payment',
+      method: 'POST',
+      data: transformedDto,
+    });
 
-    const paymentResponseDto = plainToClass(TicketPaymentResponseDto, paymentResponse.data);
-    const errors = await validate(paymentResponseDto);
+    if (paymentResponse instanceof Error) {
+      Logger.error(paymentResponse);
+      throw new BadRequestException('Payment failed. ' + paymentResponse?.message);
+    }
+
+    const paymentResponseDataDto = plainToClass(TicketPaymentResponseDataDto, paymentResponse.data);
+    const errors = await validate(paymentResponseDataDto);
 
     if (errors.length > 0) {
       throw new BadRequestException('Payment failed. Invalid payment response data');

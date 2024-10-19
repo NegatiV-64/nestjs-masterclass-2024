@@ -1,6 +1,6 @@
 import { IsString, IsUUID } from 'class-validator';
 
-export class TicketPaymentResponseDto {
+export class TicketPaymentResponseDataDto {
   @IsString()
   message: string;
 
