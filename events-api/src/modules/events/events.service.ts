@@ -72,4 +72,8 @@ export class EventsService {
       data: updateEventDto,
     });
   }
+
+  async deleteEventById(eventId: string) {
+    return await this.databaseService.event.delete({ where: { eventId } });
+  }
 }
