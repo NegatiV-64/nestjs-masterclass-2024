@@ -34,4 +34,10 @@ export class TicketsService {
       where: { ticketUserId: userId },
     });
   }
+
+  async getTicketById(ticketId: string) {
+    return await this.databaseService.ticket.findUnique({
+      where: { ticketId },
+    });
+  }
 }

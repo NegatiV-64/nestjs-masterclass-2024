@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpStatus, Param, ParseUUIDPipe, Post, Request, UseGuards } from '@nestjs/common';
 import { TicketsService } from './tickets.service';
 import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
 import { CreateTicketReqDto } from './dto/requests/create-ticket.dto';
@@ -28,6 +28,27 @@ export class TicketsController {
 
     return {
       data: myTickets,
+    };
+  }
+
+  @Get(':ticketId')
+  async getEventById(
+    @Param(
+      'ticketId',
+      new ParseUUIDPipe({
+        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
+        version: '4',
+      }),
+    )
+    ticketId: string,
+  ) {
+    const foundEvent = await this.ticketsService.getTicketById(ticketId);
+
+    if (!foundEvent) {
+      throw new BadRequestException('Ticket not found');
+    }
+    return {
+      data: foundEvent,
     };
   }
 }
