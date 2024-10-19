@@ -3,18 +3,13 @@ import { PayTicketReqDto } from '../tickets/dto/requests/pay-ticket.dto';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
-import { ConfigService } from '@nestjs/config';
-import { EnvConfig } from 'src/shared/configs/env.config';
 import { plainToClass } from 'class-transformer';
 import { TicketPaymentResponseDto } from './dto/responses/ticket-payment-response.dto';
 import { validate } from 'class-validator';
 
 @Injectable()
 export class TicketPaymentsService {
-  constructor(
-    private readonly httpService: HttpService,
-    private configService: ConfigService<EnvConfig, true>,
-  ) {}
+  constructor(private readonly httpService: HttpService) {}
 
   async processPayment(dto: PayTicketReqDto) {
     const transformedDto = {
@@ -26,18 +21,12 @@ export class TicketPaymentsService {
     };
 
     const paymentResponse = await firstValueFrom(
-      this.httpService
-        .post(this.configService.get('PAYMENT_API_URL') + '/payment', transformedDto, {
-          headers: {
-            Authorization: `Bearer ${this.configService.get('PAYMENT_API_ACCESS_TOKEN')}`,
-          },
-        })
-        .pipe(
-          catchError((error: AxiosError) => {
-            Logger.error(error);
-            throw new BadRequestException('Payment failed');
-          }),
-        ),
+      this.httpService.post('/payment', transformedDto).pipe(
+        catchError((error: AxiosError) => {
+          Logger.error(error);
+          throw new BadRequestException('Payment failed. ' + error.message);
+        }),
+      ),
     );
 
     const paymentResponseDto = plainToClass(TicketPaymentResponseDto, paymentResponse.data);
