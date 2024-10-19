@@ -98,4 +98,40 @@ export class TicketsController {
       data: updatedTicket,
     };
   }
+
+  @Put(':ticketId/cancel')
+  @Roles(UserRole.User)
+  @UseGuards(AuthTokenGuard, RolesGuard)
+  async cancelTicketById(
+    @Param(
+      'ticketId',
+      new ParseUUIDPipe({
+        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
+        version: '4',
+      }),
+    )
+    ticketId: string,
+    @Request() req,
+  ) {
+    const userId = req.user.userId;
+    const foundTicket = await this.ticketsService.getTicketById(ticketId);
+
+    if (!foundTicket) {
+      throw new BadRequestException('Ticket not found');
+    }
+
+    if (foundTicket.ticketUserId !== userId || !foundTicket?.ticketTransactionId) {
+      throw new BadRequestException('Cannot cancel ticket payment: crentials are invalid');
+    }
+    const updatedTicket = await this.ticketsService.updateTicketPaymentStatus({
+      ticketId,
+      userId,
+      transactionId: foundTicket.ticketTransactionId,
+      status: TicketStatus.Cancelled,
+    });
+
+    return {
+      data: updatedTicket,
+    };
+  }
 }
