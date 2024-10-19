@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { CreateTicketReqDto } from './dto/requests/create-ticket.dto';
 import { TicketStatus } from 'src/shared/constants/ticket-status';
+import { UpdateTicketStatusDto } from './dto/update-ticket-status.dto';
 
 @Injectable()
 export class TicketsService {
@@ -38,6 +39,18 @@ export class TicketsService {
   async getTicketById(ticketId: string) {
     return await this.databaseService.ticket.findUnique({
       where: { ticketId },
+    });
+  }
+
+  async updateTicketPaymentStatus(updateTicketStatusDto: UpdateTicketStatusDto) {
+    const { ticketId, userId, status, transactionId } = updateTicketStatusDto;
+    return await this.databaseService.ticket.update({
+      where: { ticketId },
+      data: {
+        ticketStatus: status,
+        ticketTransactionId: transactionId,
+        ticketUserId: userId,
+      },
     });
   }
 }
