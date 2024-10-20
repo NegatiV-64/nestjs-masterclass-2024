@@ -1,10 +1,13 @@
-import { Body, Controller, Get, HttpStatus, Param, ParseUUIDPipe, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards, UsePipes } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventReqDto } from './dto/requests';
 import { ListEventsParamsReqDto } from './dto/requests/list-events-params.dto';
 import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
 import { Roles, RolesGuard } from 'src/shared/guards/roles.guard';
 import { UserRole } from 'src/shared/constants/user-role.constant';
+import { UUID4PipeOptions } from 'src/shared/constants/uuid4-pipe-options.constant';
+import { UpdateEventReqDto } from './dto/requests/update-event.dto';
+import { SnakeToCamelCasePipe } from 'src/shared/pipes/snake-to-camel-case.pipe';
 
 @Controller('events')
 export class EventsController {
@@ -22,6 +25,7 @@ export class EventsController {
   }
 
   @Get()
+  @UsePipes(new SnakeToCamelCasePipe())
   async listEvents(@Query() searchParams: ListEventsParamsReqDto) {
     const events = await this.eventsService.listEvents(searchParams);
 
@@ -32,19 +36,40 @@ export class EventsController {
 
   @Get(':eventId')
   async getEventById(
-    @Param(
-      'eventId',
-      new ParseUUIDPipe({
-        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
-        version: '4',
-      }),
-    )
+    @Param('eventId', new ParseUUIDPipe(UUID4PipeOptions))
     eventId: string,
   ) {
     const foundEvent = await this.eventsService.getEventById(eventId);
 
     return {
       data: foundEvent,
+    };
+  }
+
+  @Patch(':eventId')
+  @Roles(UserRole.Admin)
+  @UseGuards(AuthTokenGuard, RolesGuard)
+  async updateEvent(
+    @Param('eventId', new ParseUUIDPipe(UUID4PipeOptions))
+    eventId: string,
+    @Body()
+    dto: UpdateEventReqDto,
+  ) {
+    const updatedEvent = await this.eventsService.updateEvent(dto, eventId);
+
+    return {
+      data: updatedEvent,
+    };
+  }
+
+  @Delete(':eventId')
+  @Roles(UserRole.Admin)
+  @UseGuards(AuthTokenGuard, RolesGuard)
+  async deleteEvent(@Param('eventId', new ParseUUIDPipe(UUID4PipeOptions)) eventId: string) {
+    const deletedEvent = await this.eventsService.deleteEvent(eventId);
+
+    return {
+      data: deletedEvent,
     };
   }
 }

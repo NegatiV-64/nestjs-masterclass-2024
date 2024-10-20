@@ -15,6 +15,7 @@ model Event {
   eventDate        DateTime @map("event_date")
   eventCreatedAt   DateTime @default(now()) @map("event_created_at")
   eventUpdatedAt   DateTime @default(now()) @updatedAt @map("event_updated_at")
+  tickets          Ticket[]
 }
 
 model User {
@@ -26,4 +27,19 @@ model User {
   userRole      String   @default("user") @map("user_role")
   userCreatedAt DateTime @default(now()) @map("user_created_at")
   userUpdatedAt DateTime @default(now()) @updatedAt @map("user_updated_at")
+  tickets       Ticket[]
+}
+
+model Ticket {
+  ticketId            String   @id @default(uuid()) @map("ticket_id")
+  ticketQuantity      Int      @map("ticket_quantity")
+  ticketPrice         Float    @map("ticket_price")
+  ticketStatus        String   @default("pending") @map("ticket_status")
+  ticketTransactionId String?  @map("ticket_transaction_id")
+  ticketEventId       String   @map("ticket_event_id")
+  ticketEvent         Event    @relation(fields: [ticketEventId], references: [eventId], onDelete: Cascade)
+  ticketUserId        String   @map("ticket_user_id")
+  ticketUser          User     @relation(fields: [ticketUserId], references: [userId], onDelete: Cascade)
+  ticketCreatedAt     DateTime @default(now()) @map("ticket_created_at")
+  ticketUpdatedAt     DateTime @default(now()) @updatedAt @map("ticket_updated_at")
 }

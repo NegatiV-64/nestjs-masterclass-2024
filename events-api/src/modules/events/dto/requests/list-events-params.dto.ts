@@ -1,5 +1,6 @@
-import { Transform } from 'class-transformer';
-import { IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
+import { Expose, Transform } from 'class-transformer';
+import { IsEnum, IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
+import { EventsSortBy, EventsSortOrder } from 'src/modules/events/constants/events-sort-params.constant';
 
 export class ListEventsParamsReqDto {
   @Transform(
@@ -14,9 +15,7 @@ export class ListEventsParamsReqDto {
 
       return parsedValue;
     },
-    {
-      toClassOnly: true,
-    },
+    { toClassOnly: true },
   )
   @IsOptional()
   @IsInt()
@@ -35,9 +34,7 @@ export class ListEventsParamsReqDto {
 
       return parsedValue;
     },
-    {
-      toClassOnly: true,
-    },
+    { toClassOnly: true },
   )
   @IsOptional()
   @IsInt()
@@ -48,4 +45,14 @@ export class ListEventsParamsReqDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @IsOptional()
+  @IsEnum(EventsSortBy)
+  @Expose({ name: 'sort_by' })
+  sortBy?: EventsSortBy;
+
+  @IsOptional()
+  @IsEnum(EventsSortOrder)
+  @Expose({ name: 'sort_order' })
+  sortOrder?: EventsSortOrder;
 }
