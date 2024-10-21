@@ -1,18 +1,20 @@
-import { IsNotEmpty, IsString, IsNumberString, Length, Matches } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumberString, Length } from 'class-validator';
+import { TimeFormat } from 'src/shared/constants/time.constant';
+import { IsDateFormatValid } from 'src/shared/validators/date-format.validator';
 
 export class PayTicketDto {
   @IsNotEmpty()
   @IsNumberString()
   @Length(4, 4, { message: 'Last 4 digits must be exactly 4 digits' })
-  last4Digits: string;
+  last4: string;
 
   @IsNotEmpty()
-  @Matches(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/, { message: 'Invalid expiry date format. Use MM/YY' })
-  cardExpiry: string;
+  @IsDateFormatValid(TimeFormat.CardTime, { message: `Invalid expiry date format. Use ${TimeFormat.CardTime}` })
+  expiration: string;
 
   @IsNotEmpty()
   @IsString()
-  cardHolderName: string;
+  cardholder: string;
 
   @IsNotEmpty()
   @IsString()
@@ -21,5 +23,5 @@ export class PayTicketDto {
 
   @IsNotEmpty()
   @IsNumberString({}, { message: 'Payment amount must be a valid number' })
-  paymentAmount: string;
+  amount: string;
 }

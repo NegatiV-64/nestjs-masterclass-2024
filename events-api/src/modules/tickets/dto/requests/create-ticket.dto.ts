@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsPositive, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsPositive, IsString, IsNumber, IsUUID } from 'class-validator';
 
 export class CreateTicketDto {
   @IsNotEmpty()
@@ -6,11 +6,13 @@ export class CreateTicketDto {
   @IsPositive()
   ticketQuantity: number;
 
+  @IsNumber()
   @IsNotEmpty()
   @IsPositive()
   ticketPrice: number;
 
   @IsNotEmpty()
   @IsString()
+  @IsUUID()
   ticketEventId: string;
 }

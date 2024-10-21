@@ -20,7 +20,7 @@ export class TicketsService {
       where: { eventId: ticketEventId },
     });
 
-    if (!event) throw new BadRequestException('Event doesnt exist!');
+    if (!event) throw new BadRequestException('Event does not exist!');
 
     const ticket = await this.databaseService.ticket.create({
       data: {
@@ -41,7 +41,7 @@ export class TicketsService {
 
   async getTicketById(ticketId: string, userId: string) {
     const ticket = await this.databaseService.ticket.findUnique({
-      where: { ticketId },
+      where: { ticketId: ticketId, ticketUserId: userId },
     });
 
     if (!ticket || ticket.ticketUserId !== userId)
@@ -52,7 +52,10 @@ export class TicketsService {
 
   async deleteTicket(ticketId: string, userId: string) {
     const ticket = await this.databaseService.ticket.findUnique({
-      where: { ticketId },
+      where: {
+        ticketId: ticketId,
+        ticketUserId: userId,
+      },
     });
 
     if (!ticket || ticket.ticketUserId !== userId) {
@@ -62,24 +65,18 @@ export class TicketsService {
     await this.databaseService.ticket.delete({
       where: { ticketId },
     });
+    return ticket;
   }
 
   async payForTicket(ticketId: string, userId: string, dto: PayTicketDto) {
     const ticket = await this.databaseService.ticket.findUnique({
-      where: { ticketId },
+      where: { ticketId: ticketId, ticketUserId: userId },
     });
 
     if (!ticket || ticket.ticketUserId !== userId) {
       throw new BadRequestException('Ticket does not exist or does not belong to the authenticated user.');
     }
-    const paymentData = {
-      last4: dto.last4Digits,
-      expiration: dto.cardExpiry,
-      cardholder: dto.cardHolderName,
-      paymentToken: dto.paymentToken,
-      amount: dto.paymentAmount,
-    };
-    const paymentResponse = await this.paymentService.processPayment(paymentData);
+    const paymentResponse = await this.paymentService.processPayment(dto);
     await this.databaseService.ticket.update({
       where: { ticketId },
       data: { ticketStatus: 'paid' },

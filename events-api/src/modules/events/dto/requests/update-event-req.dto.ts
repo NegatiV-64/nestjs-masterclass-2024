@@ -1,5 +1,6 @@
-import { IsOptional, IsString, IsDateString } from 'class-validator';
-
+import { IsOptional, IsString } from 'class-validator';
+import { TimeFormat } from 'src/shared/constants/time.constant';
+import { IsDateFormatValid } from 'src/shared/validators/date-format.validator';
 export class UpdateEventReqDto {
   @IsOptional()
   @IsString()
@@ -14,6 +15,6 @@ export class UpdateEventReqDto {
   eventLocation?: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsDateFormatValid(TimeFormat.CalendarWithTime, { message: 'Event date must be in the format YYYY-MM-DD HH:mm' })
   eventDate?: string;
 }

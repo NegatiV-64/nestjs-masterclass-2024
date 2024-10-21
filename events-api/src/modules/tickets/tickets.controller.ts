@@ -1,18 +1,18 @@
 import { TicketsService } from './tickets.service';
 import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
-import { Body, Controller, Post, UseGuards, Request, Get, Param, ParseUUIDPipe, HttpStatus, Delete, Req, Put } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Get, Param, Delete, Put } from '@nestjs/common';
 import { CreateTicketDto } from './dto/requests/create-ticket.dto';
 import { PayTicketDto } from './dto/requests/pay-ticket.dto';
-
+import { User } from 'src/shared/decorators/user.decorator';
+import { UUIDParam } from 'src/shared/decorators/uuid-param.decorator';
 @Controller('tickets')
 export class TicketsController {
   constructor(private readonly ticketService: TicketsService) {}
 
   @Post()
   @UseGuards(AuthTokenGuard)
-  async createTicket(@Body() createTicketDto: CreateTicketDto, @Request() req) {
-    const userId = req.user.userId;
-    const createTicket = await this.ticketService.createTickets(createTicketDto, userId);
+  async createTicket(@Body() createTicketDto: CreateTicketDto, @User() user) {
+    const createTicket = await this.ticketService.createTickets(createTicketDto, user.userId);
 
     return {
       data: createTicket,
@@ -21,9 +21,8 @@ export class TicketsController {
 
   @Get()
   @UseGuards(AuthTokenGuard)
-  async getUserTickets(@Request() req) {
-    const userId = req.user.userId;
-    const tickets = await this.ticketService.getUserTickets(userId);
+  async getUserTickets(@User() user) {
+    const tickets = await this.ticketService.getUserTickets(user.userId);
 
     return {
       data: tickets,
@@ -32,19 +31,8 @@ export class TicketsController {
 
   @Get(':ticketId')
   @UseGuards(AuthTokenGuard)
-  async getTicketById(
-    @Param(
-      'ticketId',
-      new ParseUUIDPipe({
-        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
-        version: '4',
-      }),
-    )
-    ticketId: string,
-    @Request() req,
-  ) {
-    const userId = req.user.userId;
-    const foundTicket = await this.ticketService.getTicketById(ticketId, userId);
+  async getTicketById(@UUIDParam('ticketId') ticketId: string, @User() user) {
+    const foundTicket = await this.ticketService.getTicketById(ticketId, user.userId);
 
     return {
       data: foundTicket,
@@ -53,19 +41,8 @@ export class TicketsController {
 
   @Delete('ticketId')
   @UseGuards(AuthTokenGuard)
-  async deleteTicket(
-    @Param(
-      'ticketId',
-      new ParseUUIDPipe({
-        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
-        version: '4',
-      }),
-    )
-    ticketId: string,
-    @Request() req,
-  ) {
-    const userId = req.user.userId;
-    await this.ticketService.deleteTicket(ticketId, userId);
+  async deleteTicket(@UUIDParam('ticketId') ticketId: string, @User() user) {
+    await this.ticketService.deleteTicket(ticketId, user.userId);
 
     return {
       message: 'Ticket deleted successfully',
@@ -74,15 +51,13 @@ export class TicketsController {
 
   @UseGuards(AuthTokenGuard)
   @Put(':id/pay')
-  async payForTicket(@Param('id') ticketId: string, @Body() dto: PayTicketDto, @Req() req) {
-    const userId = req.user.userId;
-    return this.ticketService.payForTicket(ticketId, userId, dto);
+  async payForTicket(@Param('id') ticketId: string, @Body() dto: PayTicketDto, @User() user) {
+    return this.ticketService.payForTicket(ticketId, user.userId, dto);
   }
 
   @UseGuards(AuthTokenGuard)
   @Put(':id/cancel')
-  async cancelTicket(@Param('id') ticketId: string, @Req() req) {
-    const userId = req.user.userId;
-    return this.ticketService.cancelTicket(ticketId, userId);
+  async cancelTicket(@Param('id') ticketId: string, @User() user) {
+    return this.ticketService.cancelTicket(ticketId, user.userId);
   }
 }

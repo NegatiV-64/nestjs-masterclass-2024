@@ -1,26 +1,13 @@
-import { Transform } from 'class-transformer';
-import { IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
-
+import { IsIn, IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
+import { ParseIntDecorator } from 'src/shared/decorators/parse-int.decorator';
 export class ListEventsParamsReqDto {
-  @Transform(
-    (params) => {
-      const { value } = params;
-      return typeof value === 'string' ? parseInt(value, 10) : undefined;
-    },
-    { toClassOnly: true },
-  )
+  @ParseIntDecorator()
   @IsOptional()
   @IsInt()
   @IsPositive()
   page?: number;
 
-  @Transform(
-    (params) => {
-      const { value } = params;
-      return typeof value === 'string' ? parseInt(value, 10) : undefined;
-    },
-    { toClassOnly: true },
-  )
+  @ParseIntDecorator()
   @IsOptional()
   @IsInt()
   @IsPositive()
@@ -33,9 +20,11 @@ export class ListEventsParamsReqDto {
 
   @IsOptional()
   @IsString()
+  @IsIn(['eventName', 'eventDate', 'eventCreatedAt', 'eventUpdatedAt'])
   sort_by?: 'eventName' | 'eventDate' | 'eventCreatedAt' | 'eventUpdatedAt';
 
   @IsOptional()
   @IsString()
+  @IsIn(['asc', 'desc'])
   sort_order?: 'asc' | 'desc';
 }
