@@ -1,3 +1,4 @@
+import { UpdateEventReqDto } from './dto/requests/update-event.dto';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { type CreateEventReqDto } from './dto/requests';
@@ -48,21 +49,72 @@ export class EventsService {
   }
 
   async listEvents(searchParams: ListEventsParamsReqDto) {
-    const page = searchParams.page ?? 1;
-    const limit = searchParams.limit ?? 20;
+    const { page = 1, limit = 20, sort_by, sort_order = 'asc', name  } = searchParams
 
     const events = await this.databaseService.event.findMany({
       where: {
-        eventName: searchParams.name
-          ? {
-              contains: searchParams.name,
-            }
+        eventName: name
+          ? { contains: name }
           : undefined,
       },
+
+      orderBy: sort_by && sort_order
+        ? { [sort_by]: sort_order }
+        : undefined,
+
       skip: (page - 1) * limit,
       take: limit,
     });
 
     return events;
+  }
+
+
+  async updateEvent(eventId: string, dto: UpdateEventReqDto) {
+    const { eventDate, eventDescription, eventLocation, eventName } = dto
+
+    const existingEventById = await this.databaseService.event.findFirst({
+      where: {
+        eventId,
+      },
+    });
+
+    if (!existingEventById) {
+      throw new BadRequestException('Event not found');
+    }
+
+    const updatedEvent = await this.databaseService.event.update({
+      where: {
+        eventId,
+      },
+      data: {
+        eventDate: eventDate ? time(eventDate).toDate() : undefined,
+        eventDescription,
+        eventLocation,
+        eventName,
+      },
+    });
+
+    return updatedEvent;
+  }
+
+  async deleteEventById(eventId: string) {
+    const foundEvent = await this.databaseService.event.findFirst({
+      where: {
+        eventId,
+      },
+    });
+
+    if (!foundEvent) {
+      throw new NotFoundException(`Event with id ${eventId} not found`);
+    }
+
+    const deletedEvent = await this.databaseService.event.delete({
+      where: {
+        eventId,
+      }
+    })
+
+    return deletedEvent;
   }
 }

@@ -1,3 +1,4 @@
+import { TicketsModule } from './modules/tickets/tickets.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { validateEnv } from './shared/configs/env.config';
@@ -15,6 +16,7 @@ import { AuthModule } from './modules/auth/auth.module';
     DatabaseModule,
     AuthModule,
     EventsModule,
+    TicketsModule
   ],
 })
 export class AppModule {}
