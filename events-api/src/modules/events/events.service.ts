@@ -83,26 +83,16 @@ export class EventsService {
       throw new BadRequestException('Event not found');
     }
 
-    const dataToUpdate: any = {};
-
-    if (eventDate) {
-      dataToUpdate.eventDate = time(eventDate).toDate();
-    }
-    if (eventDescription) {
-      dataToUpdate.eventDescription = eventDescription;
-    }
-    if (eventLocation) {
-      dataToUpdate.eventLocation = eventLocation;
-    }
-    if (eventName) {
-      dataToUpdate.eventName = eventName;
-    }
-
     const updatedEvent = await this.databaseService.event.update({
       where: {
         eventId,
       },
-      data: dataToUpdate,
+      data: {
+        eventDate: eventDate ? time(eventDate).toDate() : undefined,
+        eventDescription,
+        eventLocation,
+        eventName,
+      },
     });
 
     return updatedEvent;

@@ -1,6 +1,8 @@
-import { IsNotEmpty, IsNumber, IsString, Length, Matches, Validate } from "class-validator";
-import { CardExpiryConstraint } from '../../../shared/validators/cardValidators/card-expiry-date.validator';
-import { CardHolderNameConstraint } from '../../../shared/validators/cardValidators/card-holder-name.validator';
+import { IsNotEmpty, IsNumber, IsString, Length, Matches } from "class-validator";
+import { TimeFormat } from "../../../shared/constants/time.constant";
+import { IsDateFormatValid } from "../../../shared/validators/date-format.validator";
+import { IsCardExpiryValid } from "../validators/card-expiry-date.validator";
+import { IsCardHolderNameValid } from "../validators/card-holder-name.validator";
 
 export class PayTicketReqDto {
   @IsString()
@@ -9,12 +11,13 @@ export class PayTicketReqDto {
   last4Digits: string;
 
   @IsString()
-  @Validate(CardExpiryConstraint)
+  @IsDateFormatValid(TimeFormat.MonthWithYear)
+  @IsCardExpiryValid()
   cardExpiry: string;
 
   @IsString()
   @IsNotEmpty()
-  @Validate(CardHolderNameConstraint)
+  @IsCardHolderNameValid()
   cardHolderName: string;
 
   @IsString()

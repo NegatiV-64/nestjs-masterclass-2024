@@ -3,6 +3,7 @@ import { DatabaseService } from './../database/database.service';
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PayTicketReqDto } from './dto/payment-ticket.dto';
 import { PaymentService } from '../payment/payment.service';
+import { TicketStatus } from '../../shared/constants/ticket-status.constant';
 
 @Injectable()
 export class TicketsService {
@@ -68,25 +69,17 @@ export class TicketsService {
     })
 
     if (!ticket) {
-      throw new BadRequestException(`Ticket with id ${ticketId} and owner id ${userId} not found`)
+      throw new BadRequestException(`Ticket not found`)
     }
 
-    const paymentData = {
-      last4:  dto.last4Digits,
-      expiration: dto.cardExpiry,
-      cardholder: dto.cardHolderName,
-      amount: dto.paymentAmount,
-      paymentToken: dto.paymentToken
-    }
-
-    const paymentResult = await this.paymentService.payingProcess(paymentData);
+    const paymentResult = await this.paymentService.payingProcess(dto);
     await this.databaseService.ticket.update({
       where: {
         ticketId,
       },
       data: {
         ticketTransactionId: paymentResult.transactionId,
-        ticketStatus: 'paid'
+        ticketStatus: TicketStatus.Paid
       }
     })
 
@@ -102,7 +95,7 @@ export class TicketsService {
     })
 
     if (!ticket) {
-      throw new BadRequestException(`Ticket with id ${ticketId} and owner id ${userId} not found`)
+      throw new BadRequestException(`Ticket not found`)
     }
 
     const cancelledTicket = await this.databaseService.ticket.update({
@@ -110,7 +103,7 @@ export class TicketsService {
         ticketId,
       },
       data: {
-        ticketStatus: 'cancelled'
+        ticketStatus: TicketStatus.Cancelled
       }
     })
 

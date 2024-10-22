@@ -1,7 +1,6 @@
-import { SortOrderEnum } from './../../types/query.type';
+import { EventSortEnum, SortOrderEnum } from '../../../../shared/constants/query.constant';
 import { Transform } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
-import { EventSortEnum } from '../../types/query.type';
 
 export class ListEventsParamsReqDto {
   @Transform(

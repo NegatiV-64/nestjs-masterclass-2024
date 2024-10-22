@@ -1,41 +1,32 @@
 import { HttpService } from "@nestjs/axios";
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, ServiceUnavailableException } from "@nestjs/common";
+import { PayTicketReqDto } from "../tickets/dto/payment-ticket.dto";
 import { AxiosError } from "axios";
-import { lastValueFrom } from "rxjs";
 
 
 @Injectable()
 export class PaymentService {
   constructor(private readonly httpService: HttpService){}
 
-  async payingProcess(paymentData: any) {
-    const paymentApi = process.env.PAYMENT_API_URL
-    if (!paymentApi) {
-      throw new BadRequestException('Cannot find payment Api')
-    }
+  async payingProcess(dto: PayTicketReqDto) {
+    const paymentData = {
+      last4: dto.last4Digits,
+      expiration: dto.cardExpiry,
+      cardholder: dto.cardHolderName,
+      amount: dto.paymentAmount,
+      paymentToken: dto.paymentToken,
+    };
 
-    try {
-      const response = await lastValueFrom(
-        this.httpService.post(paymentApi, paymentData, {
-          headers: {
-            Authorization: `Bearer ${process.env.PAYMENT_API_ACCESS_TOKEN}`
-          }
-        })
-      );
+    const transactionId = await this.httpService.axiosRef
+      .post('/payment', paymentData)
+      .then((res) => res.data.transactionId)
+      .catch((error) => {
+        if (error instanceof AxiosError) {
+          throw new ServiceUnavailableException('Payment is currently unavailable')
+        }
+        throw new InternalServerErrorException('Payment server error')
+      })
 
-      if (response.status === 200) {
-        return {
-          paymentStatus: 'Successfully paid',
-          transactionId: response.data.transactionId,
-        }
-      } else {
-        return {
-          paymentStatus: 'Transaction failed',
-          transactionId: response.data.transactionId,
-        }
-      }
-    } catch (error) {
-      throw new BadRequestException('Payment process failed')
-    }
+    return transactionId
   }
 }

@@ -1,12 +1,12 @@
-import { IsNumber, IsString, IsUUID, Min } from "class-validator";
+import { IsNumber, IsPositive, IsString, IsUUID } from "class-validator";
 
 export class CreateTicketReqDto {
   @IsNumber()
-  @Min(0)
+  @IsPositive()
   ticketQuantity: number;
 
   @IsNumber()
-  @Min(0)
+  @IsPositive()
   ticketPrice: number;
 
   @IsString()

@@ -4,7 +4,7 @@ import { TicketsService } from './tickets.service';
 import { Body, Controller, Get, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { CreateTicketReqDto } from './dto/create-ticket.dto';
 import { UserId } from '../../shared/decorators/get-user-id.decorator';
-import { ParsingUUIDPipe } from '../../shared/pipes/uuid-params.pipe';
+import { UUIDValidationPipe } from '../../shared/pipes/uuid-params.pipe';
 
 @Controller('tickets')
 export class TicketsController {
@@ -38,7 +38,7 @@ export class TicketsController {
     @UserId()
     userId:string,
 
-    @Param('ticketId', ParsingUUIDPipe)
+    @Param('ticketId', UUIDValidationPipe)
     ticketId:string
   ) {
     const foundTicket = await this.ticketsService.getUserTicketById(userId, ticketId)
@@ -54,7 +54,7 @@ export class TicketsController {
   async payTicket(
     @Body() dto: PayTicketReqDto,
     @UserId() userId:string,
-    @Param('ticketId', ParsingUUIDPipe)
+    @Param('ticketId', UUIDValidationPipe)
     ticketId: string,
   ){
     const payingTicketResult = await this.ticketsService.payTicket(userId, ticketId, dto)
@@ -66,7 +66,7 @@ export class TicketsController {
   @UseGuards(AuthTokenGuard)
   async cancelTicket(
     @UserId() userId:string,
-    @Param('ticketId', ParsingUUIDPipe)
+    @Param('ticketId', UUIDValidationPipe)
     ticketId: string,
   ){
     const cancelledTicket = await this.ticketsService.cancelTicket(userId, ticketId)

@@ -1,4 +1,3 @@
-import { ParsingUUIDPipe } from '../../shared/pipes/uuid-params.pipe';
 import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventReqDto } from './dto/requests';
@@ -7,6 +6,7 @@ import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
 import { Roles, RolesGuard } from 'src/shared/guards/roles.guard';
 import { UserRole } from 'src/shared/constants/user-role.constant';
 import { UpdateEventReqDto } from './dto/requests/update-event.dto';
+import { UUIDValidationPipe } from '../../shared/pipes/uuid-params.pipe';
 
 @Controller('events')
 export class EventsController {
@@ -36,7 +36,7 @@ export class EventsController {
 
   @Get(':eventId')
   async getEventById(
-    @Param('eventId', ParsingUUIDPipe)
+    @Param('eventId', UUIDValidationPipe)
     eventId: string,
   ) {
     const foundEvent = await this.eventsService.getEventById(eventId);
@@ -51,7 +51,7 @@ export class EventsController {
   @Roles(UserRole.Admin)
   @UseGuards(AuthTokenGuard, RolesGuard)
   public async updateEvent(
-    @Param('eventId', ParsingUUIDPipe)
+    @Param('eventId', UUIDValidationPipe)
     eventId: string,
 
     @Body() dto: UpdateEventReqDto
@@ -66,7 +66,7 @@ export class EventsController {
 
   @Delete(':eventId')
   async deleteEvent(
-    @Param('eventId', ParsingUUIDPipe)
+    @Param('eventId', UUIDValidationPipe)
     eventId: string,
   ) {
     const deletedEvent = await this.eventsService.deleteEventById(eventId);
