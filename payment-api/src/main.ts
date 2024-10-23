@@ -30,8 +30,8 @@ app.post(
       last4: z.string().length(4),
       expiration: z.string().regex(/^\d{2}\/\d{2}$/),
       cardholder: z.string(),
-      amount: z.number().positive(),
       paymentToken: z.string().length(22),
+      amount: z.string(),
     });
 
     const result = schema.safeParse(value);
