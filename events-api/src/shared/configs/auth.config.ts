@@ -1,3 +1,3 @@
 export const AuthConfig = {
-    AuthTokenKey: "auth-token"
+  AuthTokenKey: 'auth-token',
 } as const;

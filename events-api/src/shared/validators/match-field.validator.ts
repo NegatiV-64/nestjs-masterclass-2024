@@ -1,8 +1,4 @@
-import {
-    registerDecorator,
-    ValidationArguments,
-    ValidationOptions
-} from "class-validator";
+import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
 
 /**
  * Custom validation decorator to check if the value of a property matches the value of another specified property.
@@ -23,34 +19,25 @@ import {
  * }
  * ```
  */
-export function MatchField(
-    field: string,
-    validationOptions?: ValidationOptions
-) {
-    return function (object: object, propertyName: string) {
-        registerDecorator({
-            name: "matchField",
-            target: object.constructor,
-            propertyName: propertyName,
-            constraints: [field],
-            options: validationOptions,
-            validator: {
-                validate(
-                    value: unknown,
-                    validationArguments: ValidationArguments
-                ): boolean {
-                    const [field] = validationArguments.constraints;
-                    const targetObject = validationArguments.object as Record<
-                        string,
-                        unknown
-                    >;
+export function MatchField(field: string, validationOptions?: ValidationOptions) {
+  return function (object: object, propertyName: string) {
+    registerDecorator({
+      name: 'matchField',
+      target: object.constructor,
+      propertyName: propertyName,
+      constraints: [field],
+      options: validationOptions,
+      validator: {
+        validate(value: unknown, validationArguments: ValidationArguments): boolean {
+          const [field] = validationArguments.constraints;
+          const targetObject = validationArguments.object as Record<string, unknown>;
 
-                    return value === targetObject[field];
-                },
-                defaultMessage(validationArguments) {
-                    return `${validationArguments?.property} must match ${validationArguments?.constraints[0]} field`;
-                }
-            }
-        });
-    };
+          return value === targetObject[field];
+        },
+        defaultMessage(validationArguments) {
+          return `${validationArguments?.property} must match ${validationArguments?.constraints[0]} field`;
+        },
+      },
+    });
+  };
 }

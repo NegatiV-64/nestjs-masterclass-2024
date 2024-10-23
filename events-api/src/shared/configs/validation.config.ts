@@ -1,5 +1,5 @@
-import { ValidationPipe } from "@nestjs/common";
+import { ValidationPipe } from '@nestjs/common';
 
 export const ValidationConfig = new ValidationPipe({
-    whitelist: true
+  whitelist: true,
 });
