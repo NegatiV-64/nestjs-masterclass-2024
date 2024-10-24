@@ -5,6 +5,8 @@ const envConfigSchema = z.object({
   APP_PORT: z.coerce.number().int().positive(),
   AUTH_TOKEN_SECRET: z.string(),
   AUTH_TOKEN_EXPIRES_IN: z.string(),
+  PAYMENT_API_ACCESS_TOKEN: z.string(),
+  PAYMENT_API_URL: z.string(),
 });
 
 export type EnvConfig = z.infer<typeof envConfigSchema>;

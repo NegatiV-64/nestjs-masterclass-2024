@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
-import { type CreateEventReqDto } from './dto/requests';
+import { UpdateEventReqDto, type CreateEventReqDto } from './dto/requests';
 import { time } from 'src/shared/libs/time.lib';
 import { ListEventsParamsReqDto } from './dto/requests/list-events-params.dto';
 
@@ -50,6 +50,8 @@ export class EventsService {
   async listEvents(searchParams: ListEventsParamsReqDto) {
     const page = searchParams.page ?? 1;
     const limit = searchParams.limit ?? 20;
+    const sortBy = searchParams.sort_by ?? 'eventDate';
+    const sortOrder = searchParams.sort_order ?? 'asc';
 
     const events = await this.databaseService.event.findMany({
       where: {
@@ -59,10 +61,34 @@ export class EventsService {
             }
           : undefined,
       },
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
       skip: (page - 1) * limit,
       take: limit,
     });
 
     return events;
+  }
+
+  async updateEvent(eventId: string, dto: UpdateEventReqDto) {
+    const existingEvent = await this.getEventById(eventId);
+
+    const updatedEvent = await this.databaseService.event.update({
+      where: { eventId: existingEvent.eventId },
+      data: { ...dto },
+    });
+
+    return updatedEvent;
+  }
+
+  async deleteEvent(eventId: string) {
+    const existingEvent = await this.getEventById(eventId);
+
+    const deletedEvent = await this.databaseService.event.delete({
+      where: { eventId: existingEvent.eventId },
+    });
+
+    return deletedEvent;
   }
 }
