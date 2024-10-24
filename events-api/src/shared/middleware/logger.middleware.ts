@@ -1,10 +1,11 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
+import onFinished from 'on-finished';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-  use(req: Request, _res: Response, next: NextFunction) {
-    console.log(`[${new Date().toISOString()}] ${req.method}: ${req.baseUrl + req.url}`);
+  use(req: Request, res: Response, next: NextFunction) {
+    onFinished(res, () => Logger.log(`[${res.statusCode}] ${req.method}: ${req.baseUrl + req.url}`));
 
     next();
   }
