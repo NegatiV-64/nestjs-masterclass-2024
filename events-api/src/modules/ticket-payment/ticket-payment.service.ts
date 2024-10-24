@@ -25,7 +25,7 @@ export class TicketPaymentService {
       }
 
       if ('error' in error) {
-        throw new InternalServerErrorException();
+        throw new InternalServerErrorException('Transaction Failed, Server Dead');
       }
     }
   }

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTicketReqDto, TicketPaymentReqDto } from './dto/requests';
 import { DatabaseService } from '../database/database.service';
 import { EventsService } from '../events/events.service';
@@ -51,7 +51,7 @@ export class TicketsService {
     });
 
     if (!foundTicket) {
-      throw new BadRequestException(`Invalid ticket or user Id`);
+      throw new NotFoundException(`Ticket with ${ticketId} not found`);
     }
 
     return foundTicket;
