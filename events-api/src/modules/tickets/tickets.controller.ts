@@ -1,9 +1,10 @@
-import { Controller, Post, Body, UseGuards, Get, Param, ParseUUIDPipe, HttpStatus, Put } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Param, Put } from '@nestjs/common';
 import { TicketsService } from './tickets.service';
 import { CreateTicketReqDto, TicketPaymentReqDto } from './dto/requests';
 import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
 import { User } from 'src/shared/decorators';
 import { User as UserEntity } from '@prisma/client';
+import { UUIDV4Pipe } from 'src/shared/pipes/parse-v4-uuid.pipe';
 
 @Controller('tickets')
 export class TicketsController {
@@ -32,13 +33,7 @@ export class TicketsController {
   @Get(':ticketId')
   @UseGuards(AuthTokenGuard)
   async getTicket(
-    @Param(
-      'ticketId',
-      new ParseUUIDPipe({
-        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
-        version: '4',
-      }),
-    )
+    @Param('ticketId', UUIDV4Pipe)
     ticketId: string,
     @User() user: UserEntity,
   ) {
@@ -52,13 +47,7 @@ export class TicketsController {
   @Put(':ticketId/pay')
   @UseGuards(AuthTokenGuard)
   async payForTicket(
-    @Param(
-      'ticketId',
-      new ParseUUIDPipe({
-        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
-        version: '4',
-      }),
-    )
+    @Param('ticketId', UUIDV4Pipe)
     ticketId: string,
     @User() user: UserEntity,
     @Body() dto: TicketPaymentReqDto,
@@ -73,13 +62,7 @@ export class TicketsController {
   @Put(':ticketId/cancel')
   @UseGuards(AuthTokenGuard)
   async cancelPayment(
-    @Param(
-      'ticketId',
-      new ParseUUIDPipe({
-        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
-        version: '4',
-      }),
-    )
+    @Param('ticketId', UUIDV4Pipe)
     ticketId: string,
     @User() user: UserEntity,
   ) {
