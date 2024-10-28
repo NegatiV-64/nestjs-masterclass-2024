@@ -48,4 +48,10 @@ export class ListEventsParamsReqDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @IsOptional()
+  sort_by?: string;
+
+  @IsOptional()
+  sort_order?: string;
 }
