@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventReqDto } from './dto/requests';
 import { ListEventsParamsReqDto } from './dto/requests/list-events-params.dto';
@@ -48,6 +48,8 @@ export class EventsController {
   }
 
   @Patch(':eventId')
+  @Roles(UserRole.Admin)
+  @UseGuards(AuthTokenGuard, RolesGuard)
   updateEvent(
     @Param('eventId') id: string,
     @Body()updateEventDto: CreateEventReqDto,
@@ -56,6 +58,8 @@ export class EventsController {
   }
 
   @Delete(':eventId')
+  @Roles(UserRole.Admin)
+  @UseGuards(AuthTokenGuard, RolesGuard)
   deleteEvent(
     @Param('eventId') id: string,
   ){

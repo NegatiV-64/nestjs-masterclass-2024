@@ -3,7 +3,7 @@ import { DatabaseService } from '../database/database.service';
 import { type CreateEventReqDto } from './dto/requests';
 import { time } from 'src/shared/libs/time.lib';
 import { ListEventsParamsReqDto } from './dto/requests/list-events-params.dto';
-import { SortBy } from 'src/shared/constants/sort-by.constant';
+import { SortBy } from 'src/modules/events/constants/sort-by.constant';
 import { SortOrder } from 'src/shared/constants/sort-order.constant';
 
 @Injectable()
@@ -80,6 +80,7 @@ export class EventsService {
     if (!foundEvent) {
       throw new BadRequestException(`Event with id ${eventId} does not exist`);
     }
+    
     return this.databaseService.event.update({
       where: {
         eventId,
@@ -98,7 +99,7 @@ export class EventsService {
     if (!foundEvent) {
       throw new BadRequestException(`Event with id ${eventId} does not exist`);
     }
-    return this.databaseService.event.delete({
+    return await this.databaseService.event.delete({
       where: { eventId },
     });
   }

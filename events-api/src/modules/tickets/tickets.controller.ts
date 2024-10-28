@@ -3,15 +3,16 @@ import { TicketsService } from './tickets.service';
 import { AuthTokenGuard } from 'src/shared/guards/auth-token.guard';
 import { CreateTicketReqDto } from './dto/requests/create-ticket.dto';
 import { PaymentDto } from './dto/requests';
+import { CurrentUser } from 'src/shared/decorators/CurrentUser.decorator';
 
 @Controller('tickets')
+@UseGuards(AuthTokenGuard)
 export class TicketsController {
     constructor (private readonly ticketsService: TicketsService) {}
 
     @Post()
-    @UseGuards(AuthTokenGuard)
-    public async createTicket(@Body() dto: CreateTicketReqDto, @Request() req) {
-        const createdTicket = await this.ticketsService.createTicket(dto, req.user.userId);
+    public async createTicket(@Body() dto: CreateTicketReqDto, @CurrentUser('userId') userId: string,) {
+        const createdTicket = await this.ticketsService.createTicket(dto, userId);
 
         return {
             data: createdTicket,
@@ -19,23 +20,20 @@ export class TicketsController {
     }
 
     @Get()
-    @UseGuards(AuthTokenGuard)
-    async allTickets(@Request() req) {
-        const tickets = await this.ticketsService.allTickets(req.user.userId)
+    async allTickets(@CurrentUser('userId') userId: string,) {
+        const tickets = await this.ticketsService.allTickets(userId)
         return {data: tickets}
     }
 
     @Get(':ticketId')
-    @UseGuards(AuthTokenGuard)
-    async getTicketById(@Request() req, @Param("ticketId") id) {
-        const ticket = await this.ticketsService.getTicketById(req.user.userId, id)
+    async getTicketById(@CurrentUser('userId') userId: string, @Param("ticketId") id) {
+        const ticket = await this.ticketsService.getTicketById(userId, id)
         return {data: ticket}
     }
 
     @Put(':ticketId/pay')
-    @UseGuards(AuthTokenGuard)
-    async payForTicket(@Param("ticketId") ticketId: string, @Request() req, @Body() dto: PaymentDto) {
-        const paidTicket = await this.ticketsService.payForTicket(ticketId, dto, req.user.userId)
+    async payForTicket(@Param("ticketId") ticketId: string, @CurrentUser('userId') userId: string, @Body() dto: PaymentDto) {
+        const paidTicket = await this.ticketsService.payForTicket(ticketId, dto, userId)
         return {data: paidTicket}
     }
 }

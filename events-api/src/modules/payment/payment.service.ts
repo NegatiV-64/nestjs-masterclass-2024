@@ -1,8 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Injectable, ServiceUnavailableException } from '@nestjs/common';
-import { AxiosError } from 'axios';
-import { catchError, firstValueFrom } from 'rxjs';
+import { BadRequestException, Injectable, InternalServerErrorException, ServiceUnavailableException } from '@nestjs/common';
+import { firstValueFrom } from 'rxjs';
 import { EnvConfig } from 'src/shared/configs/env.config';
 import { PaymentDto } from '../tickets/dto/requests';
 
@@ -30,7 +29,13 @@ export class PaymentService {
       
       return data.transactionId;
     } catch (error) {
-      throw new ServiceUnavailableException("Payment failed");
+      if (error.code === "ECONNREFUSED") {
+        throw new ServiceUnavailableException("Payment service is unavailable");
+      } else if(error.code === "ERR_BAD_REQUEST") {
+        throw new BadRequestException("Card number is incorrect");
+      } else {
+        throw new InternalServerErrorException("Payment failed");
+      }
     }
   }
 }
