@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, ParseUUIDPipe, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventReqDto } from './dto/requests';
 import { ListEventsParamsReqDto } from './dto/requests/list-events-params.dto';
@@ -22,14 +22,13 @@ export class EventsController {
   }
 
   @Get()
-  async listEvents(@Query() searchParams: ListEventsParamsReqDto) {
+  async listEvents(@Query() searchParams: ListEventsParamsReqDto, ) {
     const events = await this.eventsService.listEvents(searchParams);
 
     return {
       data: events,
     };
   }
-
   @Get(':eventId')
   async getEventById(
     @Param(
@@ -46,5 +45,24 @@ export class EventsController {
     return {
       data: foundEvent,
     };
+  }
+
+  @Patch(':eventId')
+  @Roles(UserRole.Admin)
+  @UseGuards(AuthTokenGuard, RolesGuard)
+  updateEvent(
+    @Param('eventId') id: string,
+    @Body()updateEventDto: CreateEventReqDto,
+  ){
+    return this.eventsService.updateEvent(id, updateEventDto)
+  }
+
+  @Delete(':eventId')
+  @Roles(UserRole.Admin)
+  @UseGuards(AuthTokenGuard, RolesGuard)
+  deleteEvent(
+    @Param('eventId') id: string,
+  ){
+    return this.eventsService.deleteEvent(id);
   }
 }
